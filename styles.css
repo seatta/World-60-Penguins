@@ -72,3 +72,6 @@ table {
 .nistable tr:nth-child(odd){
     background:none;
 }
+#buttontable tr th{
+    width: calc(100% / 3);
+}
