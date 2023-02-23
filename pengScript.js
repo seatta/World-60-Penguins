@@ -1,9 +1,5 @@
-// alt1://addapp/http://127.0.0.1:5500/Alt1/World-60-Penguins/appconfig.json
-
 /* 
-TODO: UPDATE TIMESTAMPS TO SHOW TIME SINCE UPDATE
-CLEAN UP CODE A BIT
-GITHUB IT 
+    Is my javascript terrible? Probably! It seems to work though.
 */
 
 const pengSite = `https://jq.world60pengs.com/`
@@ -69,8 +65,11 @@ function get_penguin_info(number) {
             if (info[4] < 1 ){
                 info[4] = "< 1m"
             } else if( info[4] > 60){
-                console.log(info[4])
-                info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
+                if ((info[4]/60) > 23){
+                    info[4] = `${Math.floor((info[4]/60)/24)}d ${Math.floor((info[4]/60)%24)}h ${info[4] % 60}m`
+                } else {
+                    info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
+                }
             } else {
                 info[4] = `${info[4]}m`
             }
@@ -99,15 +98,6 @@ function clear_old_data(number) {
     list = document.getElementById(`p${number}War`);
     while (list.hasChildNodes()) {
         list.removeChild(list.firstChild);
-    }    
-    if(number !== 13){
-        document.getElementById(`p${number}Dis`).innerText = "";
-        document.getElementById(`p${number}Loc`).innerText = "";
-        document.getElementById(`p${number}Spe`).innerText = "";
-        document.getElementById(`p${number}Upd`).innerText = "";
-        document.getElementById(`p${number}Poi`).innerText = "";
-    } else {
-        document.getElementById(`p${number}Loc`).innerText = "";
     }
 }
 function update_penguin(number, disguise, points, spawn, specific, updated, warning, requirements) {    
