@@ -12,5 +12,4 @@ After that is done you can paste this into your browser to install the plugin to
 [alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json](alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json)
 
 
-<br>
 It can also be used in your browser [here](https://seatta.github.io/World-60-Penguins/).
