@@ -1,33 +1,33 @@
 /* 
     Is my javascript terrible? Probably! It seems to work though.
 */
-
-const pengSite = `https://jq.world60pengs.com/`
+const penguin_site = `https://jq.world60pengs.com`
 var pengAPI, pengdata
 
 function start() { 
     reset();
     refresh();
 }
-function submitUpdate() {
-    window.open(pengSite);
+function submit_update() { 
+    window.open(penguin_site) 
 }
-function hidePeng(n) {
-    if (document.getElementById(`p${n}`).hasAttribute("dimmed")) {
-        document.getElementById(`p${n}`).removeAttribute("dimmed")
-        document.getElementById(`p${n}`).style.opacity = "1";
-        document.getElementById(`p${n}`).style.opacity = "1";
+
+function hide_penguin(n) {
+    var penguin_entry = document.getElementById(`p${n}`)
+    if (penguin_entry.hasAttribute("dimmed")) {
+        penguin_entry.removeAttribute("dimmed")
+        penguin_entry.style.opacity = "1";
     } else {
-        document.getElementById(`p${n}`).setAttribute("dimmed", "")
-        document.getElementById(`p${n}`).style.opacity = "0.2";
-        document.getElementById(`p${n}`).style.opacity = "0.2";
+        penguin_entry.setAttribute("dimmed", "")
+        penguin_entry.style.opacity = "0.2";
     }
 }
 function reset() {
-    for (let i=1; i < 14; i++) {
-        document.getElementById(`p${i}`).style.opacity = "1";
-        if (document.getElementById(`p${i}`).hasAttribute("dimmed")){
-            document.getElementById(`p${i}`).removeAttribute("dimmed")
+    for (let n=1; n < 14; n++) {
+        var penguin_entry = document.getElementById(`p${n}`)
+        penguin_entry.style.opacity = "1";
+        if (penguin_entry.hasAttribute("dimmed")){
+            penguin_entry.removeAttribute("dimmed")
         }
     }
 }
@@ -35,9 +35,11 @@ function reset() {
 async function refresh() {
     console.log("Data Updated! " + (Math.round(new Date().getTime() / 1000)))
     //I added a timestamp to the end because the API kept pulling a cached version without it
-    pengAPI = `https://api.allorigins.win/get?url=${encodeURIComponent('https://jq.world60pengs.com/rest/cache/actives.json')}&t=${Math.round(new Date().getTime() / 1000)}`
-    pengdata = await fetch_penguin_data(pengAPI);
-    pengdata = JSON.parse(pengdata["contents"])
+    penguin_API = `https://api.allorigins.win/get?url=${encodeURIComponent(`${penguin_site}/rest/cache/actives.json`)}&t=${Math.round(new Date().getTime() / 1000)}`
+    penguin_data = await fetch_penguin_data(penguin_API);
+    if (penguin_data !== "oof") {
+        penguin_data = JSON.parse(penguin_data["contents"])
+    }
     for (let i=1; i < 14; i++) {
         clear_old_data(i)
         var info = get_penguin_info(i)
@@ -48,93 +50,119 @@ async function refresh() {
         refresh();
     }, 60000);
 }
-function get_penguin_info(number) {
-    var info 
-    try{
-        if (number > 0 && number < 13) {
-            info = [
-                pengdata.Activepenguin[number-1]["disguise"],
-                pengdata.Activepenguin[number-1]["points"],
-                pengdata.Activepenguin[number-1]["name"],
-                pengdata.Activepenguin[number-1]["last_location"],
-                pengdata.Activepenguin[number-1]["time_seen"],
-                pengdata.Activepenguin[number-1]["warning"],
-                pengdata.Activepenguin[number-1]["requirements"]
-            ]
-            info[4] = Math.floor((Math.floor((Math.abs((new Date()/1000) - info[4])))/60))
-            if (info[4] < 1 ){
-                info[4] = "< 1m"
-            } else if( info[4] > 60){
-                if ((info[4]/60) > 23){
-                    info[4] = `${Math.floor((info[4]/60)/24)}d ${Math.floor((info[4]/60)%24)}h ${info[4] % 60}m`
-                } else {
-                    info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
-                }
+function get_penguin_info(n) {
+    var info = [
+        "Disguise: Unknown",
+        "?",
+        "Unknown",
+        "Unable to get location",
+        "Last Update: Failed",
+        "",
+        ""
+    ]
+    if (n < 13 && penguin_data !== "oof") {
+        info = [
+            penguin_data.Activepenguin[n-1]["disguise"],
+            penguin_data.Activepenguin[n-1]["points"],
+            penguin_data.Activepenguin[n-1]["name"],
+            penguin_data.Activepenguin[n-1]["last_location"],
+            penguin_data.Activepenguin[n-1]["time_seen"],
+            penguin_data.Activepenguin[n-1]["warning"],
+            penguin_data.Activepenguin[n-1]["requirements"]
+        ]
+        info[4] = Math.floor((Math.floor((Math.abs((new Date()/1000) - info[4])))/60))
+        if (info[4] < 1 ){
+            info[4] = "< 1m"
+        } else if( info[4] > 60){
+            if ((info[4]/60) > 23){
+                info[4] = `${Math.floor((info[4]/60)/24)}d ${Math.floor((info[4]/60)%24)}h ${info[4] % 60}m`
             } else {
-                info[4] = `${info[4]}m`
+                info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
             }
         } else {
-            info = ["","",pengdata.Bear[0]["name"],"","",""]
+            info[4] = `${info[4]}m`
         }
-    } catch {
-        info = [
-            "Disguise: Unknown",
-            "?",
-            "Unknown",
-            "Unable to get location",
-            "Last Update: Failed",
-            "",
-            ""
-        ]
-    }    
+    } else if (n = 13 && penguin_data !== "oof") {
+        info = ["","",penguin_data.Bear[0]["name"],"","",""]
+    }
     return [info[0], info[1], info[2], info[3], info[4], info[5], info[6]]
 }
 
-function clear_old_data(number) {  
-    var list = document.getElementById(`p${number}Dis`);
-    while (list.hasChildNodes()) {
-        list.removeChild(list.firstChild);
+function clear_old_data(n) {
+    var disguise, warning
+    if (n < 12) {
+        disguise = document.querySelector(`#p${n} #row1 tr #disguise`)
+        warning = document.querySelector(`#p${n} #row1 tr #warnings`)
+    } else {
+        disguise = document.querySelector(`#p${n} table tr #disguise`)
     }
-    list = document.getElementById(`p${number}War`);
-    while (list.hasChildNodes()) {
-        list.removeChild(list.firstChild);
+    while (disguise.hasChildNodes()) {
+        disguise.removeChild(disguise.firstChild);
+    }
+    if (warning !== undefined){
+        while (warning.hasChildNodes()) {
+            warning.removeChild(warning.firstChild);
+        }
     }
 }
-function update_penguin(number, disguise, points, spawn, specific, updated, warning, requirements) {    
-    if (number !== 13) {
-        if(disguise !== "Disguise: Unknown"){
-            document.getElementById(`p${number}Dis`).appendChild(document.createElement("img")).setAttribute("id", `p${number}Ico`);
-            document.getElementById(`p${number}Ico`).setAttribute("class", "disguise");
-            document.getElementById(`p${number}Ico`).setAttribute("src", `./images/${disguise.toLowerCase()}.png`);
+function update_penguin(n, d, p, sn, sp, u, w, r) {
+    var disguise, points, spawn, updated, warnings, specific
+    if (n !== 13) {    
+        disguise = document.querySelector(`#p${n} #row1 tr #disguise`)
+        points = document.querySelector(`#p${n} #row1 tr #points`)
+        spawn = document.querySelector(`#p${n} #row1 tr #spawn`)
+        updated = document.querySelector(`#p${n} #row1 tr #updated`)
+        warnings = document.querySelector(`#p${n} #row1 tr #warnings`)    
+        specific = document.querySelector(`#p${n} #row2 tr #specific`)
+
+        if(d !== "Disguise: Unknown"){
+            disguise.appendChild(document.createElement("img")).setAttribute("class", "disguise")
+            disguise.firstChild.setAttribute("src", `./images/${d.toLowerCase()}.png`);
         } else {            
-        document.getElementById(`p${number}Dis`).innerText = disguise;
+            disguise.innerText = d;
         }
-        document.getElementById(`p${number}Loc`).innerText = spawn;
-        document.getElementById(`p${number}Spe`).innerText = specific;
-        document.getElementById(`p${number}Upd`).innerText = updated;
-        document.getElementById(`p${number}Poi`).innerText = points;
-        if (warning !== "") {
-            document.getElementById(`p${number}War`).appendChild(document.createElement("span")).setAttribute("id", `p${number}WarIco`);
-            document.getElementById(`p${number}WarIco`).setAttribute("title", warning);
-            document.getElementById(`p${number}WarIco`).setAttribute("class", "war");
-            document.getElementById(`p${number}WarIco`).innerText =  "!";
+        spawn.innerText = sn;
+        specific.innerText = sp;
+        updated.innerText = u;
+        points.innerText = p;
+        if (w !== "") {
+            warnings.appendChild(document.createElement("span")).setAttribute("id", `warning_icon`);
+            warning_span = warnings.querySelector("#warning_icon")
+            warning_span.setAttribute("title", w);
+            warning_span.setAttribute("class", "war");
+            warning_span.innerText =  "!";
         }
-        if (requirements !== "") {
-            document.getElementById(`p${number}War`).appendChild(document.createElement("span")).setAttribute("id", `p${number}ReqIco`);
-            document.getElementById(`p${number}ReqIco`).setAttribute("title", requirements);
-            document.getElementById(`p${number}ReqIco`).setAttribute("class", "req");
-            document.getElementById(`p${number}ReqIco`).innerText =  "i";
+        if (r !== "") {
+            warnings.appendChild(document.createElement("span")).setAttribute("id", `requirement_icon`);
+            requirement_span = warnings.querySelector("#requirement_icon");
+            requirement_span.setAttribute("title", r);
+            requirement_span.setAttribute("class", "req");
+            requirement_span.innerText =  "i";
         }
     } else {
-        document.getElementById(`p${number}Dis`).appendChild(document.createElement("img")).setAttribute("id", `p${number}Ico`);
-        document.getElementById(`p${number}Ico`).setAttribute("class", "disguise");
-        document.getElementById(`p${number}Ico`).setAttribute("src", `./images/polarbear.png`);
-        document.getElementById(`p${number}Loc`).innerText = `Well in: ${spawn}`
-        document.getElementById(`p${number}Poi`).innerText = 1;
+        disguise = document.querySelector(`#p${n} table tr #disguise`)
+        points = document.querySelector(`#p${n} table tr #points`)
+        spawn = document.querySelector(`#p${n} table tr #spawn`)
+        
+        if(d !== "Disguise: Unknown"){
+            disguise.appendChild(document.createElement("img")).setAttribute("id", `icon`);
+            var icon = disguise.querySelector("#icon")
+            icon.setAttribute("class", "disguise")
+            icon.setAttribute("src", `./images/polarbear.png`)
+            spawn.innerText = `Well in: ${sn}`
+            points.innerText = 1
+        } else {            
+            disguise.innerText = d;
+            spawn.innerText = `Well in: Unknown`
+        }
     }
 }
 
 async function fetch_penguin_data(url) {
-	var data = await fetch(url) 
-    return data.json()
+    try{
+        var data = await fetch(url) 
+        return data.json()
+    } catch {
+        return "oof"
+    }
 }
