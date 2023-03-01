@@ -2,12 +2,13 @@
     Is my javascript terrible? Probably! It seems to work though.
 */
 const penguin_site = `https://jq.world60pengs.com`
-var pengAPI, pengdata
+var penguin_API, penguin_data
 
 function start() { 
     reset();
     refresh();
 }
+
 function submit_update() { 
     window.open(penguin_site) 
 }
@@ -22,70 +23,75 @@ function hide_penguin(n) {
         penguin_entry.style.opacity = "0.2";
     }
 }
+
 function reset() {
     for (let n=1; n < 14; n++) {
         var penguin_entry = document.getElementById(`p${n}`)
         penguin_entry.style.opacity = "1";
-        if (penguin_entry.hasAttribute("dimmed")){
+        if (penguin_entry.hasAttribute("dimmed")) {
             penguin_entry.removeAttribute("dimmed")
         }
     }
 }
 
 async function refresh() {
-    console.log("Data Updated! " + (Math.round(new Date().getTime() / 1000)))
     //I added a timestamp to the end because the API kept pulling a cached version without it
     penguin_API = `https://api.allorigins.win/get?url=${encodeURIComponent(`${penguin_site}/rest/cache/actives.json`)}&t=${Math.round(new Date().getTime() / 1000)}`
     penguin_data = await fetch_penguin_data(penguin_API);
-    if (penguin_data !== "oof") {
+    if (penguin_data) {
         penguin_data = JSON.parse(penguin_data["contents"])
     }
-    for (let i=1; i < 14; i++) {
-        clear_old_data(i)
-        var info = get_penguin_info(i)
-        update_penguin(i, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
+    for (let n=1; n < 14; n++) {
+        clear_old_data(n)
+        var info = get_penguin_info(n)
+        update_penguin(n, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
     }
     //Auto-refresh every minute
-    setTimeout(function(){
+    setTimeout(function() {
         refresh();
     }, 60000);
 }
+
 function get_penguin_info(n) {
-    var info = [
-        "Disguise: Unknown",
-        "?",
-        "Unknown",
-        "Unable to get location",
-        "Last Update: Failed",
-        "",
-        ""
-    ]
-    if (n < 13 && penguin_data !== "oof") {
+    var info
+    if (!penguin_data) {
         info = [
-            penguin_data.Activepenguin[n-1]["disguise"],
-            penguin_data.Activepenguin[n-1]["points"],
-            penguin_data.Activepenguin[n-1]["name"],
-            penguin_data.Activepenguin[n-1]["last_location"],
-            penguin_data.Activepenguin[n-1]["time_seen"],
-            penguin_data.Activepenguin[n-1]["warning"],
-            penguin_data.Activepenguin[n-1]["requirements"]
+            "Disguise: Unknown",
+            "?",
+            "Unknown",
+            "Unable to get location",
+            "Last Update: Failed",
+            "",
+            ""
         ]
-        info[4] = Math.floor((Math.floor((Math.abs((new Date()/1000) - info[4])))/60))
-        if (info[4] < 1 ){
-            info[4] = "< 1m"
-        } else if( info[4] > 60){
-            if ((info[4]/60) > 23){
-                info[4] = `${Math.floor((info[4]/60)/24)}d ${Math.floor((info[4]/60)%24)}h ${info[4] % 60}m`
+    } else {
+        if (n < 13) {
+            var data = penguin_data.Activepenguin[n-1]
+            info = [
+                data["disguise"],
+                data["points"],
+                data["name"],
+                data["last_location"],
+                Math.floor(Math.floor(Math.abs((new Date()/1000) - data["time_seen"]))/60),
+                data["warning"],
+                data["requirements"]
+            ]
+            if (info[4] < 1 ) {
+                info[4] = "< 1m"
+            } else if(info[4] > 60) {
+                if ((info[4]/60) > 23) {
+                    info[4] = `${Math.floor((info[4]/60)/24)}d ${Math.floor((info[4]/60)%24)}h ${info[4] % 60}m`
+                } else {
+                    info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
+                }
             } else {
-                info[4] = `${Math.floor(info[4]/60)}h ${info[4] % 60}m`
+                info[4] = `${info[4]}m`
             }
         } else {
-            info[4] = `${info[4]}m`
+            info = ["","",penguin_data.Bear[0]["name"],"","","",""]
         }
-    } else if (n = 13 && penguin_data !== "oof") {
-        info = ["","",penguin_data.Bear[0]["name"],"","",""]
-    }
-    return [info[0], info[1], info[2], info[3], info[4], info[5], info[6]]
+    }    
+    return info
 }
 
 function clear_old_data(n) {
@@ -99,23 +105,26 @@ function clear_old_data(n) {
     while (disguise.hasChildNodes()) {
         disguise.removeChild(disguise.firstChild);
     }
-    if (warning !== undefined){
+    if (warning) {
         while (warning.hasChildNodes()) {
             warning.removeChild(warning.firstChild);
         }
     }
 }
-function update_penguin(n, d, p, sn, sp, u, w, r) {
-    var disguise, points, spawn, updated, warnings, specific
-    if (n !== 13) {    
-        disguise = document.querySelector(`#p${n} #row1 tr #disguise`)
-        points = document.querySelector(`#p${n} #row1 tr #points`)
-        spawn = document.querySelector(`#p${n} #row1 tr #spawn`)
-        updated = document.querySelector(`#p${n} #row1 tr #updated`)
-        warnings = document.querySelector(`#p${n} #row1 tr #warnings`)    
-        specific = document.querySelector(`#p${n} #row2 tr #specific`)
 
-        if(d !== "Disguise: Unknown"){
+function update_penguin(n, d, p, sn, sp, u, w, r) {
+    var disguise, points, spawn, updated, warnings, specific, s1, s2
+    if (n < 13) {
+        s1 = `#p${n} #row1 tr`
+        s2 = `#p${n} #row2 tr`
+        disguise = document.querySelector(`${s1} #disguise`)
+        points = document.querySelector(`${s1} #points`)
+        spawn = document.querySelector(`${s1} #spawn`)
+        updated = document.querySelector(`${s1} #updated`)
+        warnings = document.querySelector(`${s1} #warnings`)    
+        specific = document.querySelector(`${s2} #specific`)
+
+        if(d !== "Disguise: Unknown") {
             disguise.appendChild(document.createElement("img")).setAttribute("class", "disguise")
             disguise.firstChild.setAttribute("src", `./images/${d.toLowerCase()}.png`);
         } else {            
@@ -125,26 +134,27 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
         specific.innerText = sp;
         updated.innerText = u;
         points.innerText = p;
-        if (w !== "") {
+        if (w) {
             warnings.appendChild(document.createElement("span")).setAttribute("id", `warning_icon`);
-            warning_span = warnings.querySelector("#warning_icon")
+            var warning_span = warnings.querySelector("#warning_icon")
             warning_span.setAttribute("title", w);
             warning_span.setAttribute("class", "war");
             warning_span.innerText =  "!";
         }
-        if (r !== "") {
+        if (r) {
             warnings.appendChild(document.createElement("span")).setAttribute("id", `requirement_icon`);
-            requirement_span = warnings.querySelector("#requirement_icon");
+            var requirement_span = warnings.querySelector("#requirement_icon");
             requirement_span.setAttribute("title", r);
             requirement_span.setAttribute("class", "req");
             requirement_span.innerText =  "i";
         }
     } else {
-        disguise = document.querySelector(`#p${n} table tr #disguise`)
-        points = document.querySelector(`#p${n} table tr #points`)
-        spawn = document.querySelector(`#p${n} table tr #spawn`)
+        s1 = `#p${n} table tr`
+        disguise = document.querySelector(`${s1} #disguise`)
+        points = document.querySelector(`${s1} #points`)
+        spawn = document.querySelector(`${s1} #spawn`)
         
-        if(d !== "Disguise: Unknown"){
+        if(d !== "Disguise: Unknown") {
             disguise.appendChild(document.createElement("img")).setAttribute("id", `icon`);
             var icon = disguise.querySelector("#icon")
             icon.setAttribute("class", "disguise")
@@ -153,16 +163,17 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
             points.innerText = 1
         } else {            
             disguise.innerText = d;
-            spawn.innerText = `Well in: Unknown`
+            spawn.innerText = `Unknown`
+            points.innerText = "?"
         }
     }
 }
 
 async function fetch_penguin_data(url) {
     try{
-        var data = await fetch(url) 
-        return data.json()
+        return (await fetch(url)).json()
     } catch {
-        return "oof"
+        console.log(`Fetching data from ${url} failed.`)
+        return 
     }
 }
