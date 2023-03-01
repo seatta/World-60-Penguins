@@ -1,78 +1,78 @@
-
 body {
-    padding-top: 4px;
-    user-select: none;
+  padding-top: 4px;
+  user-select: none;
 }
 table {
-    font-size: small;
-    margin-left: 4px;
-    margin-right: 4px;   
-    width: calc(100% - 8px);
+  font-size: small;
+  margin-left: 4px;
+  margin-right: 4px;
+  width: calc(100% - 8px);
 }
 .pengs {
-    margin-bottom: 4px;
-    max-height:calc(100vh - 48px);
-    overflow-y: auto;
+  margin-bottom: 4px;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
 }
 .bear {
-    height: 48px;
+  height: 48px;
 }
 .pengtable {
-    font-size: small;   
-    margin-bottom: 4px; 
-    width: calc(100% - 8px);
-    background-color: rgba(124, 115, 115, 0.349);
+  font-size: small;
+  margin-bottom: 4px;
+  width: calc(100% - 8px);
+  background-color: rgba(124, 115, 115, 0.349);
 }
 .buttons {
-    width: 100%;
-    height:fit-content;
-    bottom: 4px;
-    position:absolute;
+  width: 100%;
+  height: fit-content;
+  bottom: 4px;
+  position: absolute;
 }
-.disguise{
-    padding-left: 4px;
-    padding-right: 4px;
-    width:24px;
+.disguise {
+  padding-left: 4px;
+  padding-right: 4px;
+  width: 24px;
 }
 .points {
-    padding-left: 4px;
-    padding-right: 4px;
-    width:12px;
+  padding-left: 4px;
+  padding-right: 4px;
+  width: 12px;
 }
 .warnings {
-    padding-left: 4px;
-    padding-right: 4px;
-    width:38px;
+  padding-left: 4px;
+  padding-right: 4px;
+  width: 38px;
 }
-.updated{
-    width:106px;
+.updated {
+  width: 106px;
 }
-.war, .req {
-    padding-left: 5px;
-    padding-right: 5px;
-    margin: 2px;
+.war,
+.req {
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 2px;
 }
 .war {
-    color: black;
-    background: gold;
-    border-radius: 10%;
+  color: black;
+  background: gold;
+  border-radius: 10%;
 }
 .req {
-    color: black;
-    background: lightblue;
-    border-radius: 50%;
+  color: black;
+  background: lightblue;
+  border-radius: 50%;
 }
 
 .nistable:first-child {
-    background:rgba(255,255,255,0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 .nistable:nth-child(2) {
-    background:rgba(255,255,255,0.3);
+  background: rgba(255, 255, 255, 0.3);
 }
 
-.nistable tr:nth-child(odd){
-    background:none;
+.nistable tr:nth-child(odd) {
+  background: none;
 }
-#buttontable tr th{
-    width: calc(100% / 3);
+#buttontable tr th {
+  width: calc(100% / 3);
 }
