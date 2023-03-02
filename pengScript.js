@@ -7,10 +7,10 @@ var penguin_API, penguin_data;
 function start() {
   reset();
   refresh();
-  //Auto-refresh every minute
+  //Auto-refresh every 2 minutes
   setInterval(function () {
     refresh();
-  }, 60000);
+  }, 120000);
 }
 
 function submit_update() {
@@ -35,6 +35,18 @@ function reset() {
     if (penguin_entry.hasAttribute("dimmed")) {
       penguin_entry.removeAttribute("dimmed");
     }
+  }
+}
+
+function manual_refresh() {
+  var button = document.getElementById("refreshButton");
+  //Limits manual refreshes to every 10 seconds
+  if (!button.hasAttribute("disabled")) {
+    refresh();
+    button.setAttribute("disabled", "true");
+    setTimeout(function () {
+      button.removeAttribute("disabled");
+    }, 10000);
   }
 }
 

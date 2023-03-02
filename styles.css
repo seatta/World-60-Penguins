@@ -76,3 +76,7 @@ table {
 #buttontable tr th {
   width: calc(100% / 3);
 }
+.nisbutton[disabled="true"] {
+  opacity: 0.2;
+  pointer-events: none;
+}
