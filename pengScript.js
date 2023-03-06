@@ -68,7 +68,7 @@ async function refresh() {
 function get_penguin_info(n) {
   var info;
   if (!penguin_data) {
-    info = ["Disguise: Unknown", "?", "Unknown", "Unable to get location", "Last Update: Failed", "", ""];
+    info = ["", "", "Failed fetching penguin data", "Retrying in 10 seconds", "", "", ""];
   } else {
     if (n < 13) {
       var data = penguin_data.Activepenguin[n - 1];
@@ -104,12 +104,16 @@ function get_penguin_info(n) {
 }
 
 function clear_old_data(n) {
-  var disguise, warning;
+  var disguise, warning, penguin_entry;
   if (n < 12) {
     disguise = document.querySelector(`#p${n} #row1 tr #disguise`);
     warning = document.querySelector(`#p${n} #row1 tr #warnings`);
   } else {
     disguise = document.querySelector(`#p${n} table tr #disguise`);
+  }
+  penguin_entry = document.querySelector(`#p${n}`);
+  if (penguin_entry.hasAttribute("hidden")) {
+    penguin_entry.removeAttribute("hidden");
   }
   while (disguise.hasChildNodes()) {
     disguise.removeChild(disguise.firstChild);
@@ -133,12 +137,15 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
     warnings = document.querySelector(`${s1} #warnings`);
     specific = document.querySelector(`${s2} #specific`);
 
-    if (d !== "Disguise: Unknown") {
+    if (d == "" && n == 2) {
+      disguise.innerText = d;
+    } else if (d == "" && n > 1) {
+      document.getElementById(`p${n}`).setAttribute("hidden", "hidden");
+    } else {
       disguise.appendChild(document.createElement("img")).setAttribute("class", "disguise");
       disguise.firstChild.setAttribute("src", `./images/${d.toLowerCase()}.png`);
-    } else {
-      disguise.innerText = d;
     }
+
     spawn.innerText = sn;
     specific.innerText = sp;
     updated.innerText = u;
@@ -163,7 +170,7 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
     points = document.querySelector(`${s1} #points`);
     spawn = document.querySelector(`${s1} #spawn`);
 
-    if (d !== "Disguise: Unknown") {
+    if (d !== "") {
       disguise.appendChild(document.createElement("img")).setAttribute("id", `icon`);
       var icon = disguise.querySelector("#icon");
       icon.setAttribute("class", "disguise");
@@ -171,19 +178,17 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
       spawn.innerText = `Well in: ${sn}`;
       points.innerText = 1;
     } else {
-      disguise.innerText = d;
-      spawn.innerText = `Unknown`;
-      points.innerText = "?";
+      document.getElementById(`p${n}`).setAttribute("hidden", "hidden");
     }
   }
 }
 
 async function fetch_penguin_data(url) {
   try {
-    console.log(`Fetched data from ${url} successfully.`);
     return (await fetch(url)).json();
   } catch {
-    console.log(`Fetching data from ${url} failed.`);
-    return;
+    setTimeout(function () {
+      manual_refresh();
+    }, 10000);
   }
 }
