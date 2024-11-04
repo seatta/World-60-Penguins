@@ -1,7 +1,6 @@
 /* 
     Is my javascript terrible? Probably! It seems to work though.
 */
-const penguin_site = `https://jq.world60pengs.com`;
 var penguin_API, penguin_data;
 
 function start() {
@@ -52,19 +51,16 @@ function manual_refresh() {
 }
 
 async function refresh() {
-	//I added a timestamp to the end because the API kept pulling a cached version without it
-	penguin_API = `https://api.allorigins.win/get?url=${encodeURIComponent(`${penguin_site}/rest/cache/actives.json`)}&t=${Math.round(
-		new Date().getTime() / 1000
-	)}`;
-	penguin_data = await fetch_penguin_data(penguin_API);
+	const peng_url = `https://jq.world60pengs.com/rest/cache/actives.json`
+	const cors_url = `https://corsproxy.io/?${encodeURIComponent(peng_url)}`;
 
-	if (penguin_data) {
-		penguin_data = JSON.parse(penguin_data['contents']);
-	}
-	for (let n = 1; n < 14; n++) {
-		clear_old_data(n);
-		var info = get_penguin_info(n);
-		update_penguin(n, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
+	penguin_data = await fetch_penguin_data(cors_url);
+	if (penguin_data != null) {
+		for (let n = 1; n < 14; n++) {
+			clear_old_data(n);
+			var info = get_penguin_info(n);
+			update_penguin(n, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
+		}
 	}
 }
 
