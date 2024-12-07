@@ -1,10 +1,10 @@
 /* 
-    Is my javascript terrible? Probably! It seems to work though.
+    I need to rewrite this eventually!
 */
-var penguin_API, penguin_data;
+var penguin_data;
+var penguin_count;
 
 function start() {
-	setup_table();
 	reset();
 	refresh();
 	//Auto-refresh every 2 minutes
@@ -29,7 +29,7 @@ function hide_penguin(n) {
 }
 
 function reset() {
-	for (let n = 1; n < 14; n++) {
+	for (let n = 1; n < penguin_count + 1; n++) {
 		var penguin_entry = document.getElementById(`p${n}`);
 		penguin_entry.style.opacity = '1';
 		if (penguin_entry.hasAttribute('dimmed')) {
@@ -55,23 +55,27 @@ async function refresh() {
 	const cors_url = `https://corsproxy.io/?${encodeURIComponent(peng_url)}`;
 
 	penguin_data = await fetch_penguin_data(cors_url);
-	if (penguin_data != null) {
-		for (let n = 1; n < 14; n++) {
+	penguin_count = penguin_data ? penguin_data.Activepenguin.length + 1 : 2	
+	setup_table();
+	if (penguin_data != null) {	
+		for (let n = 1; n < penguin_count + 1; n++) {
 			clear_old_data(n);
 			var info = get_penguin_info(n);
 			update_penguin(n, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
 		}
+	} else {
+		var info = get_penguin_info(0);
+		update_penguin(1, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
 	}
 }
 
 function get_penguin_info(n) {
 	const DEFAULT_INFO = ['', '', 'Failed fetching penguin data', 'Retrying in 10 seconds', '', '', ''];
 
-	if (!penguin_data) {
-		return DEFAULT_INFO;
-	}
+	if (!penguin_data) return DEFAULT_INFO;
+	
 
-	if (n < 13) {
+	if (n < penguin_count) {
 		const data = penguin_data.Activepenguin[n - 1];
 		const timeDiffInMinutes = Math.floor(Math.floor(Math.abs(new Date() / 1000 - data['time_seen'])) / 60);
 
@@ -92,7 +96,7 @@ function get_penguin_info(n) {
 
 function clear_old_data(n) {
 	var disguise, warning, penguin_entry;
-	if (n < 13) {
+	if (n < penguin_count) {
 		disguise = document.querySelector(`#p${n} #row1 tbody tr #disguise`);
 		warning = document.querySelector(`#p${n} #row1 tbody tr #warnings`);
 	} else {
@@ -115,16 +119,16 @@ function clear_old_data(n) {
 }
 
 function update_penguin(n, d, p, sn, sp, u, w, r) {
-	const s1 = n < 13 ? `#p${n} #row1 tr` : `#p${n} table tr`;
+	const s1 = n < penguin_count ? `#p${n} #row1 tr` : `#p${n} table tr`;
 	const disguise = document.querySelector(`${s1} #disguise`);
 	const points = document.querySelector(`${s1} #points`);
 	const spawn = document.querySelector(`${s1} #spawn`);
 	const updated = document.querySelector(`${s1} #updated`);
 	const warnings = document.querySelector(`${s1} #warnings`);
-	const specific = n < 13 ? document.querySelector(`#p${n} #row2 #specific`) : null;
+	const specific = n < penguin_count ? document.querySelector(`#p${n} #row2 #specific`) : null;
 
 	if (d === '') {
-		if (n > 1 && n < 13) {
+		if (n > 1 && n < penguin_count) {
 			document.getElementById(`p${n}`).setAttribute('hidden', 'hidden');
 		} else if (n === 2) {
 			disguise.innerText = d;
@@ -133,7 +137,7 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
 		disguise.innerHTML = `<img class="disguise" src="./images/${d.toLowerCase()}.png">`;
 	}
 
-	if (n >= 13) {
+	if (n >= penguin_count) {
 		if (sn !== '') {
 			disguise.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
 			spawn.innerText = `Well in: ${sn}`;
@@ -158,15 +162,14 @@ function update_penguin(n, d, p, sn, sp, u, w, r) {
 
 function setup_table() {
 	const pengsDiv = document.querySelector('.pengs');
-
-	for (let i = 1; i <= 13; i++) {
+	for (let i = 1; i <= penguin_count; i++) {
 		const penguinDiv = document.createElement('div');
 		penguinDiv.id = `p${i}`;
 		penguinDiv.setAttribute('onclick', `hide_penguin(${i})`);
 
 		let tableHTML;
 
-		if (i < 13) {
+		if (i < penguin_count) {
 			tableHTML = `
 		  <table class="nistable" id="row1">
 			<tr>
@@ -199,6 +202,7 @@ function setup_table() {
 
 		penguinDiv.innerHTML = tableHTML;
 		pengsDiv.appendChild(penguinDiv);
+		if (!penguin_data) return
 	}
 }
 
