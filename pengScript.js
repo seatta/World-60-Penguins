@@ -5,213 +5,259 @@ var penguin_data;
 var penguin_count;
 
 function start() {
-	reset();
-	refresh();
-	//Auto-refresh every 2 minutes
-	setInterval(function () {
-		refresh();
-	}, 120000);
+  reset();
+  refresh();
+  //Auto-refresh every 2 minutes
+  setInterval(function () {
+    refresh();
+  }, 120000);
 }
 
 function submit_update() {
-	window.open(penguin_site);
+  window.open(penguin_site);
 }
 
 function hide_penguin(n) {
-	var penguin_entry = document.getElementById(`p${n}`);
-	if (penguin_entry.hasAttribute('dimmed')) {
-		penguin_entry.removeAttribute('dimmed');
-		penguin_entry.style.opacity = '1';
-	} else {
-		penguin_entry.setAttribute('dimmed', '');
-		penguin_entry.style.opacity = '0.2';
-	}
+  var penguin_entry = document.getElementById(`p${n}`);
+  if (penguin_entry.hasAttribute("dimmed")) {
+    penguin_entry.removeAttribute("dimmed");
+    penguin_entry.style.opacity = "1";
+  } else {
+    penguin_entry.setAttribute("dimmed", "");
+    penguin_entry.style.opacity = "0.2";
+  }
 }
 
 function reset() {
-	for (let n = 1; n < penguin_count + 1; n++) {
-		var penguin_entry = document.getElementById(`p${n}`);
-		penguin_entry.style.opacity = '1';
-		if (penguin_entry.hasAttribute('dimmed')) {
-			penguin_entry.removeAttribute('dimmed');
-		}
-	}
+  for (let n = 1; n < penguin_count + 1; n++) {
+    var penguin_entry = document.getElementById(`p${n}`);
+    penguin_entry.style.opacity = "1";
+    if (penguin_entry.hasAttribute("dimmed")) {
+      penguin_entry.removeAttribute("dimmed");
+    }
+  }
 }
 
 function manual_refresh() {
-	var button = document.getElementById('refreshButton');
-	//Limits manual refreshes to every 10 seconds
-	if (!button.hasAttribute('disabled')) {
-		refresh();
-		button.setAttribute('disabled', 'true');
-		setTimeout(function () {
-			button.removeAttribute('disabled');
-		}, 10000);
-	}
+  var button = document.getElementById("refreshButton");
+  //Limits manual refreshes to every 10 seconds
+  if (!button.hasAttribute("disabled")) {
+    refresh();
+    button.setAttribute("disabled", "true");
+    setTimeout(function () {
+      button.removeAttribute("disabled");
+    }, 10000);
+  }
 }
 
 async function refresh() {
-	const peng_url = `https://jq.world60pengs.com/rest/cache/actives.json`
-	const cors_url = `https://corsproxy.io/?${encodeURIComponent(peng_url)}`;
+  const peng_url = `https://jq.world60pengs.com/rest/cache/actives.json`;
+  const cors_url = `https://corsproxy.io/?${encodeURIComponent(peng_url)}`;
 
-	penguin_data = await fetch_penguin_data(cors_url);
-	penguin_count = penguin_data ? penguin_data.Activepenguin.length + 1 : 2	
-	setup_table();
-	if (penguin_data != null) {	
-		for (let n = 1; n < penguin_count + 1; n++) {
-			clear_old_data(n);
-			var info = get_penguin_info(n);
-			update_penguin(n, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
-		}
-	} else {
-		var info = get_penguin_info(0);
-		update_penguin(1, info[0], info[1], info[2], info[3], info[4], info[5], info[6]);
-	}
+  penguin_data = await fetch_penguin_data(cors_url);
+  penguin_count = penguin_data ? penguin_data.Activepenguin.length + 1 : 1;
+  build_table(penguin_count);
+  if (penguin_data != null) {
+    for (let n = 1; n < penguin_count + 1; n++) {
+      clear_old_data(n);
+      var info = get_penguin_info(n);
+      update_penguin(
+        n,
+        info[0],
+        info[1],
+        info[2],
+        info[3],
+        info[4],
+        info[5],
+        info[6]
+      );
+    }
+  } else {
+    var info = get_penguin_info(0);
+    update_penguin(
+      1,
+      info[0],
+      info[1],
+      info[2],
+      info[3],
+      info[4],
+      info[5],
+      info[6]
+    );
+  }
 }
 
 function get_penguin_info(n) {
-	const DEFAULT_INFO = ['', '', 'Failed fetching penguin data', 'Retrying in 10 seconds', '', '', ''];
+  const DEFAULT_INFO = [
+    "",
+    "",
+    "Failed fetching penguin data",
+    "Retrying in 10 seconds",
+    "",
+    "",
+    "",
+  ];
 
-	if (!penguin_data) return DEFAULT_INFO;
-	
+  if (!penguin_data) return DEFAULT_INFO;
 
-	if (n < penguin_count) {
-		const data = penguin_data.Activepenguin[n - 1];
-		const timeDiffInMinutes = Math.floor(Math.floor(Math.abs(new Date() / 1000 - data['time_seen'])) / 60);
+  if (n < penguin_count) {
+    const data = penguin_data.Activepenguin[n - 1];
+    const timeDiffInMinutes = Math.floor(
+      Math.floor(Math.abs(new Date() / 1000 - data["time_seen"])) / 60
+    );
 
-		const timeString =
-			timeDiffInMinutes > 1440
-				? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
-				: timeDiffInMinutes > 60
-				? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
-				: timeDiffInMinutes > 1
-				? `${timeDiffInMinutes % 60}m`
-				: '<1m';
+    const timeString =
+      timeDiffInMinutes > 1440
+        ? `${Math.floor(timeDiffInMinutes / 1440)}d ` +
+          `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` +
+          `${timeDiffInMinutes % 60}m`
+        : timeDiffInMinutes > 60
+        ? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` +
+          `${timeDiffInMinutes % 60}m`
+        : timeDiffInMinutes > 1
+        ? `${timeDiffInMinutes % 60}m`
+        : "<1m";
 
-		return [data['disguise'], data['points'], data['name'], data['last_location'], timeString, data['warning'], data['requirements']];
-	} else {
-		return ['', '', penguin_data.Bear[0]['name'], '', '', '', ''];
-	}
+    return [
+      data["disguise"],
+      data["points"],
+      data["name"],
+      data["last_location"],
+      timeString,
+      data["warning"],
+      data["requirements"],
+    ];
+  } else {
+    return ["", "", penguin_data.Bear[0]["name"], "", "", "", ""];
+  }
 }
 
 function clear_old_data(n) {
-	var disguise, warning, penguin_entry;
-	if (n < penguin_count) {
-		disguise = document.querySelector(`#p${n} #row1 tbody tr #disguise`);
-		warning = document.querySelector(`#p${n} #row1 tbody tr #warnings`);
-	} else {
-		disguise = document.querySelector(`#p${n} table tr #disguise`);
-	}
-	penguin_entry = document.querySelector(`#p${n}`);
-	if (penguin_entry && penguin_entry.hasAttribute('hidden')) {
-		penguin_entry.removeAttribute('hidden');
-	}
-	if (disguise) {
-		while (disguise.hasChildNodes()) {
-			disguise.removeChild(disguise.firstChild);
-		}
-	}
-	if (warning) {
-		while (warning.hasChildNodes()) {
-			warning.removeChild(warning.firstChild);
-		}
-	}
+  var disguise, warning, penguin_entry;
+  if (n < penguin_count) {
+    disguise = document.querySelector(`#p${n} #row1 tbody tr #disguise`);
+    warning = document.querySelector(`#p${n} #row1 tbody tr #warnings`);
+  } else {
+    disguise = document.querySelector(`#p${n} table tr #disguise`);
+  }
+  penguin_entry = document.querySelector(`#p${n}`);
+  if (penguin_entry && penguin_entry.hasAttribute("hidden")) {
+    penguin_entry.removeAttribute("hidden");
+  }
+  if (disguise) {
+    while (disguise.hasChildNodes()) {
+      disguise.removeChild(disguise.firstChild);
+    }
+  }
+  if (warning) {
+    while (warning.hasChildNodes()) {
+      warning.removeChild(warning.firstChild);
+    }
+  }
 }
 
 function update_penguin(n, d, p, sn, sp, u, w, r) {
-	const s1 = n < penguin_count ? `#p${n} #row1 tr` : `#p${n} table tr`;
-	const disguise = document.querySelector(`${s1} #disguise`);
-	const points = document.querySelector(`${s1} #points`);
-	const spawn = document.querySelector(`${s1} #spawn`);
-	const updated = document.querySelector(`${s1} #updated`);
-	const warnings = document.querySelector(`${s1} #warnings`);
-	const specific = n < penguin_count ? document.querySelector(`#p${n} #row2 #specific`) : null;
+  const s1 = n < penguin_count ? `#p${n} #row1 tr` : `#p${n} table tr`;
+  const disguise = document.querySelector(`${s1} #disguise`);
+  const points = document.querySelector(`${s1} #points`);
+  const spawn = document.querySelector(`${s1} #spawn`);
+  const updated = document.querySelector(`${s1} #updated`);
+  const warnings = document.querySelector(`${s1} #warnings`);
+  const specific =
+    n < penguin_count ? document.querySelector(`#p${n} #row2 #specific`) : null;
 
-	if (d === '') {
-		if (n > 1 && n < penguin_count) {
-			document.getElementById(`p${n}`).setAttribute('hidden', 'hidden');
-		} else if (n === 2) {
-			disguise.innerText = d;
-		}
-	} else {
-		disguise.innerHTML = `<img class="disguise" src="./images/${d.toLowerCase()}.png">`;
-	}
+  if (d === "") {
+    if (n > 1 && n < penguin_count) {
+      document.getElementById(`p${n}`).setAttribute("hidden", "hidden");
+    } else if (n === 2) {
+      disguise.innerText = d;
+    }
+  } else {
+    disguise.innerHTML = `<img class="disguise" src="./images/${d.toLowerCase()}.png">`;
+  }
 
-	if (n >= penguin_count) {
-		if (sn !== '') {
-			disguise.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
-			spawn.innerText = `Well in: ${sn}`;
-			points.innerText = 1;
-		} else {
-			document.getElementById(`p${n}`).setAttribute('hidden', 'hidden');
-		}
-	} else {
-		spawn.innerText = sn;
-		specific.innerText = sp;
-		updated.innerText = u;
-		points.innerText = p;
+  if (n >= penguin_count) {
+    if (sn !== "") {
+      disguise.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
+      spawn.innerText = `Well in: ${sn}`;
+      points.innerText = 1;
+    } else {
+      document.getElementById(`p${n}`).setAttribute("hidden", "hidden");
+    }
+  } else {
+    spawn.innerText = sn;
+    specific.innerText = sp;
+    updated.innerText = u;
+    points.innerText = p;
 
-		if (w) {
-			warnings.innerHTML += `<span class="war" title="${w}">!</span>`;
-		}
-		if (r) {
-			warnings.innerHTML += `<span class="req" title="${r}">i</span>`;
-		}
-	}
+    if (w) {
+      warnings.innerHTML += `<span class="war" title="${w}">!</span>`;
+    }
+    if (r) {
+      warnings.innerHTML += `<span class="req" title="${r}">i</span>`;
+    }
+  }
 }
 
-function setup_table() {
-	const pengsDiv = document.querySelector('.pengs');
-	for (let i = 1; i <= penguin_count; i++) {
-		const penguinDiv = document.createElement('div');
-		penguinDiv.id = `p${i}`;
-		penguinDiv.setAttribute('onclick', `hide_penguin(${i})`);
+function build_table(row_amount) {
+  const penguins_div = document.querySelector(".pengs");
 
-		let tableHTML;
+  const penguin_table_html = `
+  	<table class="nistable" id="row1">
+		<tr>
+		<th class="disguise"><small id="disguise"></small></th>
+		<th class="points" id="points"></th>
+		<th class="warnings" id="warnings"></th>
+		<th class="spawn"><small id="spawn"></small></th>
+		<th class="updated"><small id="updated"></small></th>
+		</tr>
+	</table>
+	<table class="nistable pengtable" id="row2">
+		<tr>
+		<th><small id="specific"></small></th>
+		</tr>
+	</table>`;
 
-		if (i < penguin_count) {
-			tableHTML = `
-		  <table class="nistable" id="row1">
-			<tr>
-			  <th class="disguise"><small id="disguise"></small></th>
-			  <th class="points" id="points"></th>
-			  <th class="warnings" id="warnings"></th>
-			  <th class="spawn"><small id="spawn"></small></th>
-			  <th class="updated"><small id="updated"></small></th>
-			</tr>
-		  </table>
-		  <table class="nistable pengtable" id="row2">
-			<tr>
-			  <th><small id="specific"></small></th>
-			</tr>
-		  </table>
-		`;
-		} else {
-			tableHTML = `
-		  <table class="nistable">
-			<tr class="bear">
-			  <th class="disguise"><small id="disguise"></small></th>
-			  <th class="points" id="points"></th>
-			  <th class="warnings" id="warnings"></th>
-			  <th class="spawn"><small id="spawn"></small></th>
-			  <th class="updated"></th>
-			</tr>
-		  </table>
-		`;
-		}
+  const bear_table_html = `
+  	<table class="nistable">
+		<tr class="bear">
+		<th class="disguise"><small id="disguise"></small></th>
+		<th class="points" id="points"></th>
+		<th class="warnings" id="warnings"></th>
+		<th class="spawn"><small id="spawn"></small></th>
+		<th class="updated"></th>
+		</tr>
+	</table>`;
 
-		penguinDiv.innerHTML = tableHTML;
-		pengsDiv.appendChild(penguinDiv);
-		if (!penguin_data) return
-	}
+  if (row_amount > 1 && penguin_data) {
+    for (let i = 1; i <= row_amount; i++) {
+      const row_div = document.createElement("div");
+      const id = `p${i}`;
+      row_div.id = id;
+      if (!document.querySelector(`#${id}`)) {
+        row_div.setAttribute("onclick", `hide_penguin(${i})`);
+        row_div.innerHTML =
+          i < row_amount ? penguin_table_html : bear_table_html;
+        penguins_div.appendChild(row_div);
+      }
+    }
+  } else {
+    const row_div = document.createElement("div");
+    const id = "p1";
+    row_div.id = id;
+    if (!document.querySelector(`#${id}`)) {
+      row_div.innerHTML = penguin_table_html;
+      penguins_div.appendChild(row_div);
+    }
+  }
 }
 
 async function fetch_penguin_data(url) {
-	try {
-		return (await fetch(url)).json();
-	} catch {
-		setTimeout(function () {
-			manual_refresh();
-		}, 10000);
-	}
+  try {
+    return (await fetch(url)).json();
+  } catch {
+    setTimeout(function () {
+      manual_refresh();
+    }, 10000);
+  }
 }
