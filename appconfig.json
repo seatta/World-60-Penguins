@@ -1,17 +1,16 @@
 {
-    "appName":"World 60 Penguins",
-    "description":"Helps locate penguins.",
-    "appUrl":"./index.html",
-    "configUrl":"./appconfig.json",
-    "iconUrl": "./images/icon.png",
-    "defaultWidth":490,
-    "defaultHeight":841,
-    "minWidth":490,
-    "minHeight":841,
-    "maxWidth":490,
-    "maxHeight":800,
-    "requestHandlers": [ ],
-    "activators": [ ],
-    "permissions": "none"
+  "appName": "World 60 Penguins",
+  "description": "Helps locate penguins.",
+  "appUrl": "./index.html",
+  "configUrl": "./appconfig.json",
+  "iconUrl": "./images/icon.png",
+  "defaultWidth": 400,
+  "defaultHeight": 400,
+  "minWidth": 400,
+  "minHeight": 200,
+  "maxWidth": 400,
+  "maxHeight": 800,
+  "requestHandlers": [],
+  "activators": [],
+  "permissions": "none"
 }
-
