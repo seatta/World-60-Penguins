@@ -88,8 +88,6 @@ function get_penguin_info(n) {
             : timeDiffInMinutes > 1
                 ? `${timeDiffInMinutes % 60}m`
                 : "<1m";
-    console.log("\n" + n);
-    console.log(data["requirements"]);
     const entry = {
         number: n,
         disguise: n < penguin_count ? data["disguise"] : "",
@@ -100,8 +98,6 @@ function get_penguin_info(n) {
         warnings: n < penguin_count ? data["warning"] : "",
         requirements: n < penguin_count ? data["requirements"] : "Requires the 'Hunt for the Red Raktuber' Quest",
     };
-    console.log(entry.requirements);
-    console.log(entry);
     return entry;
 }
 function update_penguin(entry) {
@@ -127,7 +123,7 @@ function update_penguin(entry) {
         disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
         spawn_element.innerText = `Well in: ${entry.spawn}`;
         points_element.innerText = 1;
-        warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
+        warnings_element.innerHTML = `<span class="req" title="${entry.requirements}">i</span>`;
     }
 }
 function build_penguin_table(row_amount) {
