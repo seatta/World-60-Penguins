@@ -137,6 +137,7 @@ function get_penguin_info(n: number): Entry {
       : timeDiffInMinutes > 1
       ? `${timeDiffInMinutes % 60}m`
       : "<1m";
+
   const entry: Entry = {
     number: n,
     disguise: n < penguin_count ? data["disguise"] : "",
@@ -145,7 +146,7 @@ function get_penguin_info(n: number): Entry {
     specific: n < penguin_count ? data["last_location"] : "",
     last_updated: n < penguin_count ? time_string : "",
     warnings: n < penguin_count ? data["warning"] : "",
-    requirements: n < penguin_count ? data["requirements"] : "Requires the 'Hunt for the Red Raktuber' Quest",
+    requirements: data["requirements"],
   };
 
   return entry;
@@ -171,12 +172,19 @@ function update_penguin(entry: Entry): void {
     updated_element.innerText = entry.last_updated;
     points_element.innerText = entry.points;
     if (entry.warnings) warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
+    // Gives the 2 point penguin the Back to the Freezer requirement tooltip
+    if (entry.number == penguin_count - 1)
+      warnings_element.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+    // Gives the ghost penguin the Some Like it Cold and Desert Treasure requirements tooltip
+    if (entry.number == penguin_count - 2)
+      warnings_element.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
     if (entry.requirements) warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
   } else {
     disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
     spawn_element.innerText = `Well in: ${entry.spawn}`;
     points_element.innerText = 1;
-    warnings_element.innerHTML = `<span class="req" title="${entry.requirements}">i</span>`;
+    // Gives the polar bear the Hunt for Red Raktuber requirement tooltip
+    warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
   }
 }
 

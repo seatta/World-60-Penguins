@@ -96,7 +96,7 @@ function get_penguin_info(n) {
         specific: n < penguin_count ? data["last_location"] : "",
         last_updated: n < penguin_count ? time_string : "",
         warnings: n < penguin_count ? data["warning"] : "",
-        requirements: n < penguin_count ? data["requirements"] : "Requires the 'Hunt for the Red Raktuber' Quest",
+        requirements: data["requirements"],
     };
     return entry;
 }
@@ -116,6 +116,10 @@ function update_penguin(entry) {
         points_element.innerText = entry.points;
         if (entry.warnings)
             warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
+        if (entry.number == penguin_count - 1)
+            warnings_element.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+        if (entry.number == penguin_count - 2)
+            warnings_element.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
         if (entry.requirements)
             warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
     }
@@ -123,7 +127,7 @@ function update_penguin(entry) {
         disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
         spawn_element.innerText = `Well in: ${entry.spawn}`;
         points_element.innerText = 1;
-        warnings_element.innerHTML = `<span class="req" title="${entry.requirements}">i</span>`;
+        warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
     }
 }
 function build_penguin_table(row_amount) {
