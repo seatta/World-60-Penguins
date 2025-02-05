@@ -171,7 +171,6 @@ function update_penguin(entry: Entry): void {
     specific_element.innerText = entry.specific;
     updated_element.innerText = entry.last_updated;
     points_element.innerText = entry.points;
-    if (entry.warnings) warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
     if (entry.number == penguin_count - 1)
       warnings_element.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
@@ -179,6 +178,7 @@ function update_penguin(entry: Entry): void {
     if (entry.number == penguin_count - 2)
       warnings_element.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
     if (entry.requirements) warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
+    if (entry.warnings) warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
   } else {
     disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
     spawn_element.innerText = `Well in: ${entry.spawn}`;
