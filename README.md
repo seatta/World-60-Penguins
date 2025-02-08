@@ -25,7 +25,7 @@ Clicking a penguin toggles it's transparency, making it easier to keep track of 
 
 ---
 
-**_If you have the [Alt1 Toolkit][alt1_url] installed, paste the `alt1://` below link into your browser:_**
+**_If you have the [Alt1 Toolkit][alt1_url] installed, paste the `alt1://` link below into your browser:_**
 
 `alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json`
 
