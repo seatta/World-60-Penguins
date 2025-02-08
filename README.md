@@ -25,15 +25,11 @@ Clicking a penguin toggles it's transparency, making it easier to keep track of 
 
 ---
 
-**_If you have the [Alt1 Toolkit][alt1_url] installed, click below to install this to Alt1:_**
+**_If you have the [Alt1 Toolkit][alt1_url] installed, paste the `alt1://` below link into your browser:_**
 
-<div align=center>
-
-**_[Install to Alt1 Toolkit][appconfig]_**
+`alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json`
 
 **_[You can also use it in your browser][site_url]_**
-
-</div>
 
 ---
 
@@ -42,4 +38,3 @@ Clicking a penguin toggles it's transparency, making it easier to keep track of 
 [alt1_url]: https://runeapps.org/alt1
 [site_url]: https://seatta.github.io/World-60-Penguins/
 [peng_url]: https://jq.world60pengs.com/
-[appconfig]: alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json
