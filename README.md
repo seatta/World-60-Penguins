@@ -12,7 +12,7 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 | :-----: | :-------------------------------------: |
 |   ❌    |       Clears all checked penguins       |
 |    ↻    |         Refreshes all penguins          |
-|   ✏️    | Opens the [World60Pengs][peng_url] site |
+|   ✏️    | Opens the [wiki page][site_url] for editing |
 
 Clicking a penguin toggles it's transparency, making it easier to keep track of penguins.
 
