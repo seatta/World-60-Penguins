@@ -31,6 +31,13 @@ function start(): void {
   }, 120000);
 }
 
+function toggleInfo(): void {
+  const box = document.getElementById("infoBox");
+  if (box) {
+    box.style.display = box.style.display === "none" ? "block" : "none";
+  }
+}
+
 /**
  * Opens the wiki page in the browser
  */
@@ -96,8 +103,6 @@ async function refresh() {
   penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
   clear_old_data(penguin_count);
   build_penguin_table(penguin_count);
-  console.log(penguin_data);
-  console.log(penguin_count);
 
   if (penguin_data) {
     for (let n: number = 1; n <= penguin_count; n++) {
@@ -218,6 +223,7 @@ function build_penguin_table(row_amount: number): void {
       <th><small id="specific">https://github.com/seatta/World-60-Penguins/issues</small></th>
       </tr>`;
   const penguin_template: string = `
+  <div class="peng-entry">
     <table class="nistable" id="row1">
       <tr>
       <th class="disguise"><small id="disguise"></small></th>
@@ -226,13 +232,15 @@ function build_penguin_table(row_amount: number): void {
       <th class="spawn"><small id="spawn"></small></th>
       <th class="updated"><small id="updated"></small></th>
       </tr>
-  </table>
-  <table class="nistable pengtable" id="row2">
+    </table>
+    <table class="nistable pengtable" id="row2">
       <tr>
       <th><small id="specific"></small></th>
       </tr>
-  </table>`;
+    </table>
+  </div>`;
   const bear_template: string = `
+  <div class="peng-entry">
     <table class="nistable">
       <tr class="bear">
       <th class="disguise"><small id="disguise"></small></th>
@@ -241,7 +249,8 @@ function build_penguin_table(row_amount: number): void {
       <th class="spawn"><small id="spawn"></small></th>
       <th class="updated"></th>
       </tr>
-  </table>`;
+    </table>
+  </div>`;
   let row_div: any;
 
   if (!penguin_data || row_amount === 1) {
