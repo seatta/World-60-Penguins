@@ -1,7 +1,6 @@
 "use strict";
-const penguin_site = `https://jq.world60pengs.com`;
-const penguin_site_json = `${penguin_site}/rest/cache/actives.json`;
-const cors_url = `https://corsproxy.io/?${encodeURIComponent(penguin_site_json)}`;
+const penguin_site = `https://runescape.wiki/w/Penguin_Hide_and_Seek#Current_World_60_Locations`;
+const penguin_site_json = `https://api.w60pengu.in/locations`;
 let penguin_data;
 let penguin_count;
 const perform_fetch = true;
@@ -53,11 +52,12 @@ function dim_row(number) {
 async function refresh() {
     const now = new Date();
     if (perform_fetch)
-        penguin_data = await fetch_penguin_data(`${cors_url}?_=${now}`);
-    penguin_count = penguin_data ? penguin_data.Activepenguin.length + 1 : 1;
+        penguin_data = await fetch_penguin_data(`${penguin_site_json}?_=${now}`);
+    penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
     clear_old_data(penguin_count);
     build_penguin_table(penguin_count);
-    console.log("penguins: " + JSON.stringify(penguin_data, null, 2) + " " + penguin_count);
+    console.log(penguin_data);
+    console.log(penguin_count);
     if (penguin_data) {
         for (let n = 1; n <= penguin_count; n++) {
             update_penguin(get_penguin_info(n));
@@ -79,8 +79,8 @@ function clear_old_data(count) {
     }
 }
 function get_penguin_info(n) {
-    const data = n < penguin_count ? penguin_data.Activepenguin[n - 1] : "";
-    const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["time_seen"]) / 60);
+    const data = n < penguin_count ? penguin_data[String(n)] : "";
+    const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
     const time_string = timeDiffInMinutes > 1440
         ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
         : timeDiffInMinutes > 60
@@ -92,8 +92,8 @@ function get_penguin_info(n) {
         number: n,
         disguise: n < penguin_count ? data["disguise"] : "",
         points: n < penguin_count ? data["points"] : "",
-        spawn: n < penguin_count ? data["name"] : penguin_data.Bear[0]["name"],
-        specific: n < penguin_count ? data["last_location"] : "",
+        spawn: n < penguin_count ? data["name"] : penguin_data[13]["name"],
+        specific: n < penguin_count ? data["location"] : "",
         last_updated: n < penguin_count ? time_string : "",
         warnings: n < penguin_count ? data["warning"] : "",
         requirements: data["requirements"],
@@ -125,7 +125,7 @@ function update_penguin(entry) {
     }
     else {
         disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
-        spawn_element.innerText = `Well in: ${entry.spawn}`;
+        spawn_element.innerText = `${entry.spawn}`;
         points_element.innerText = 1;
         warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
     }
