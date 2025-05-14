@@ -3,15 +3,42 @@ body {
   user-select: none;
 }
 
+#container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.info-banner {
+  background-color: #3b3b3b;
+  color: #fff;
+  padding: 10px 16px;
+  margin: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  border-bottom: 1px solid #444;
+  user-select: none;
+  text-align: center;
+}
+
+ul {
+  margin: 0px 4px 4px 4px;
+  padding: 4px 20px 4px 20px;
+  background-color: rgba(124, 115, 115, 0.349);
+}
+
+li {
+  padding-bottom: 8px;
+}
+
 table {
   font-size: small;
-  margin-left: 4px;
-  margin-right: 4px;
+  margin: 0px 4px 0px 4px;
   width: calc(100% - 8px);
 }
 
 .pengs {
-  margin-bottom: 4px;
+  margin-bottom: 46px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
 }
@@ -24,31 +51,31 @@ table {
   font-size: small;
   margin-bottom: 4px;
   width: calc(100% - 8px);
-  background-color: rgba(124, 115, 115, 0.349);
 }
 
 .buttons {
   width: 100%;
   height: fit-content;
-  bottom: 4px;
-  position: absolute;
+  bottom: 0;
+  position: fixed;
+  padding-top: 2px;
+  z-index: 999;
 }
 
+.disguise,
+.points,
+.warnings {
+  padding: 0px 4px 0px 4px;
+}
 .disguise {
-  padding-left: 4px;
-  padding-right: 4px;
   width: 24px;
 }
 
 .points {
-  padding-left: 4px;
-  padding-right: 4px;
   width: 12px;
 }
 
 .warnings {
-  padding-left: 4px;
-  padding-right: 4px;
   width: 38px;
 }
 
@@ -58,8 +85,7 @@ table {
 
 .war,
 .req {
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 0px 5px 0px 5px;
   margin: 2px;
 }
 
@@ -73,6 +99,10 @@ table {
   color: black;
   background: lightblue;
   border-radius: 50%;
+}
+
+.nistable {
+  border-collapse: collapse;
 }
 
 .nistable:first-child {
