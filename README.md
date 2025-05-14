@@ -2,7 +2,7 @@
 
 # World 60 Penguins
 
-An [Alt1][alt1_url] plugin that fetches data from [World60Pengs][peng_url]
+An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]'s API.
 
 ---
 
@@ -33,8 +33,6 @@ Clicking a penguin toggles it's transparency, making it easier to keep track of 
 
 ---
 
-<small>This project is not associated with the [World60Pengs][peng_url] website.</small>
-
 [alt1_url]: https://runeapps.org/alt1
 [site_url]: https://seatta.github.io/World-60-Penguins/
-[peng_url]: https://jq.world60pengs.com/
+[peng_url]: https://discord.gg/World60Pengs
