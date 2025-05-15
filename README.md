@@ -8,11 +8,12 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 
 ![preview image](doc/images/preview.png)
 
-| Buttons |                    Usage                    |
-| :-----: | :-----------------------------------------: |
-|   ❌    |         Clears all checked penguins         |
-|    ↻    |           Refreshes all penguins            |
-|   ✏️    | Opens the [wiki page][wiki_url] for editing |
+| Buttons |            Usage             |
+| :-----: | :--------------------------: |
+|   ❌    | Clears all checked penguins  |
+|    ↻    |    Refreshes all penguins    |
+|   ✏️    |  Edit a penguin's location   |
+|   👍    | Confirm a penguin's location |
 
 Clicking a penguin toggles it's transparency, making it easier to keep track of penguins.
 
@@ -33,15 +34,15 @@ Clicking a penguin toggles it's transparency, making it easier to keep track of 
 
 ---
 
-### Potentially Planned Additions
+<!-- ### Potentially Planned Additions
 
 ---
 
 <div align=left>
 
-- In-plugin penguin updating
+- All have been added
 
-</div>
+</div> -->
 
 </div>
 

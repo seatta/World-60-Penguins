@@ -7,7 +7,7 @@
   "defaultWidth": 400,
   "defaultHeight": 400,
   "minWidth": 400,
-  "minHeight": 200,
+  "minHeight": 360,
   "maxWidth": 400,
   "maxHeight": 800,
   "requestHandlers": [],
