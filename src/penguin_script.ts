@@ -1,6 +1,4 @@
-const penguin_site: string = `https://runescape.wiki/w/Penguin_Hide_and_Seek#Current_World_60_Locations`;
-const penguin_site_json: string = `https://api.w60pengu.in`;
-// const cors_url: string = `https://corsproxy.io/?${encodeURIComponent(penguin_site_json)}`;
+const penguin_site: string = `https://api.w60pengu.in`;
 let penguin_data: any;
 let penguin_count: number;
 
@@ -8,7 +6,7 @@ let penguin_count: number;
 const perform_fetch: boolean = true;
 
 // Local storage keys
-const INFO_BOX_STORAGE_KEY: string = 'w60penguins_infobox_state';
+const INFO_BOX_STORAGE_KEY: string = "w60penguins_infobox_state";
 
 type Entry = {
   number: number;
@@ -27,11 +25,11 @@ type Entry = {
 function start(): void {
   reset_rows();
   refresh();
-  
+
   // Load info box state from local storage
   loadInfoBoxState();
-  
-  //Auto-refresh every 30 seconds
+
+  // Auto-refresh every 30 seconds
   setInterval(() => {
     refresh();
   }, 30000);
@@ -43,19 +41,19 @@ function start(): void {
 function loadInfoBoxState(): void {
   const box = document.getElementById("infoBox");
   const toggle = document.getElementById("infoToggle");
-  
+
   if (box && toggle) {
     try {
       const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
-      if (savedState === 'closed') {
-        box.style.display = 'none';
-        toggle.textContent = 'Click to expand';
+      if (savedState === "closed") {
+        box.style.display = "none";
+        toggle.textContent = "Click to expand";
       } else {
-        box.style.display = 'block';
-        toggle.textContent = 'Click to collapse';
+        box.style.display = "block";
+        toggle.textContent = "Click to collapse";
       }
     } catch (error) {
-      console.error('Error accessing localStorage:', error);
+      console.error("Error accessing localStorage:", error);
     }
   }
 }
@@ -66,17 +64,17 @@ function loadInfoBoxState(): void {
 function toggleInfo(): void {
   const box = document.getElementById("infoBox");
   const toggle = document.getElementById("infoToggle");
-  
+
   if (box && toggle) {
     const newState = box.style.display === "none" ? "block" : "none";
     box.style.display = newState;
     toggle.textContent = newState === "none" ? "Click to expand" : "Click to collapse";
-    
+
     // Save state to local storage
     try {
       localStorage.setItem(INFO_BOX_STORAGE_KEY, newState === "none" ? "closed" : "open");
     } catch (error) {
-      console.error('Error saving to localStorage:', error);
+      console.error("Error saving to localStorage:", error);
     }
   }
 }
@@ -121,9 +119,9 @@ function dim_row(number: number) {
   const entry = document.getElementById(`p${number}`);
   // Check if the row is currently being edited
   const specificElement = document.querySelector(`#p${number} #specific`);
-  
+
   // If the row is being edited (contains an edit form), do not dim it
-  if (entry && specificElement && !specificElement.querySelector('.edit-form')) {
+  if (entry && specificElement && !specificElement.querySelector(".edit-form")) {
     if (entry.hasAttribute("dimmed")) {
       entry.removeAttribute("dimmed");
       entry.style.opacity = "1";
@@ -139,7 +137,7 @@ function dim_row(number: number) {
  */
 async function refresh() {
   const now = new Date();
-  if (perform_fetch) penguin_data = await fetch_penguin_data(`${penguin_site_json}/locations`);
+  if (perform_fetch) penguin_data = await fetch_penguin_data(`${penguin_site}/locations`);
   penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
   clear_old_data(penguin_count);
   build_penguin_table(penguin_count);
@@ -363,53 +361,52 @@ async function confirmLocation(penguinId: number): Promise<void> {
     console.error("Cannot confirm location: No penguin data available");
     return;
   }
-  
+
   const confirmButton = document.querySelector(`#p${penguinId} .confirm-button`) as HTMLElement;
-  
+
   if (confirmButton) {
     // Show loading state
     const originalContent = confirmButton.innerHTML;
     confirmButton.innerHTML = "⏳";
     confirmButton.style.pointerEvents = "none";
-    
+
     try {
       // Prepare the data to send (adjust according to actual API requirements)
       const data = {
         key: penguinId,
       };
-      
+
       // Send confirmation to API
-      const response = await fetch(`${penguin_site_json}/locationConfirm`, {
-        method: 'POST',
+      const response = await fetch(`${penguin_site}/locationConfirm`, {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(data)
+        body: JSON.stringify(data),
       });
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
       }
-      
+
       // Handle successful confirmation
       const result = await response.json();
-      
+
       // Show success state
       confirmButton.innerHTML = "✓";
       confirmButton.classList.add("confirmed");
-      
+
       // Reset after a delay
       setTimeout(() => {
         confirmButton.innerHTML = originalContent;
         confirmButton.style.pointerEvents = "auto";
       }, 3000);
-      
     } catch (error) {
       console.error("Error confirming location:", error);
-      
+
       // Show error state
       confirmButton.innerHTML = "❌";
-      
+
       // Reset after a delay
       setTimeout(() => {
         confirmButton.innerHTML = originalContent;
@@ -426,24 +423,24 @@ async function confirmLocation(penguinId: number): Promise<void> {
  */
 function editLocation(penguinId: number, event: Event): void {
   event.stopPropagation(); // Prevent row dimming
-  
+
   if (!penguin_data || !penguin_data[String(penguinId)]) {
     console.error("Cannot edit location: No penguin data available");
     return;
   }
-  
+
   const specificElement = document.querySelector(`#p${penguinId} #specific`) as HTMLElement;
   if (!specificElement) return;
-  
+
   // If we're already editing, don't create another form
-  if (specificElement.querySelector('.edit-form')) return;
-  
+  if (specificElement.querySelector(".edit-form")) return;
+
   const currentLocation = penguin_data[String(penguinId)].location;
   const originalContent = specificElement.innerHTML;
-  
+
   // Create and append edit form
-  const form = document.createElement('div');
-  form.className = 'edit-form';
+  const form = document.createElement("div");
+  form.className = "edit-form";
   form.innerHTML = `
     <input type="text" class="location-input" value="${currentLocation}" />
     <div class="edit-buttons">
@@ -451,20 +448,20 @@ function editLocation(penguinId: number, event: Event): void {
       <button class="cancel-button" title="Cancel">✗</button>
     </div>
   `;
-  
-  specificElement.innerHTML = '';
+
+  specificElement.innerHTML = "";
   specificElement.appendChild(form);
-  
+
   // Focus the input
-  const inputField = form.querySelector('.location-input') as HTMLInputElement;
+  const inputField = form.querySelector(".location-input") as HTMLInputElement;
   inputField.focus();
   inputField.select();
-  
+
   // Add event listeners to buttons
-  const saveButton = form.querySelector('.save-button') as HTMLButtonElement;
-  const cancelButton = form.querySelector('.cancel-button') as HTMLButtonElement;
-  
-  saveButton.addEventListener('click', async (e) => {
+  const saveButton = form.querySelector(".save-button") as HTMLButtonElement;
+  const cancelButton = form.querySelector(".cancel-button") as HTMLButtonElement;
+
+  saveButton.addEventListener("click", async (e) => {
     e.stopPropagation();
     const newLocation = inputField.value.trim();
     if (newLocation && newLocation !== currentLocation) {
@@ -473,15 +470,15 @@ function editLocation(penguinId: number, event: Event): void {
       specificElement.innerHTML = originalContent;
     }
   });
-  
-  cancelButton.addEventListener('click', (e) => {
+
+  cancelButton.addEventListener("click", (e) => {
     e.stopPropagation();
     specificElement.innerHTML = originalContent;
   });
-  
+
   // Handle Enter key on input
-  inputField.addEventListener('keyup', async (e) => {
-    if (e.key === 'Enter') {
+  inputField.addEventListener("keyup", async (e) => {
+    if (e.key === "Enter") {
       e.stopPropagation();
       const newLocation = inputField.value.trim();
       if (newLocation && newLocation !== currentLocation) {
@@ -489,7 +486,7 @@ function editLocation(penguinId: number, event: Event): void {
       } else {
         specificElement.innerHTML = originalContent;
       }
-    } else if (e.key === 'Escape') {
+    } else if (e.key === "Escape") {
       specificElement.innerHTML = originalContent;
     }
   });
@@ -503,39 +500,39 @@ function editLocation(penguinId: number, event: Event): void {
 async function updateLocation(penguinId: number, newLocation: string): Promise<void> {
   const specificElement = document.querySelector(`#p${penguinId} #specific`) as HTMLElement;
   if (!specificElement) return;
-  
+
   // Store original content to restore on error
   const originalContent = penguin_data[String(penguinId)].location;
-  
+
   // Show loading state
   specificElement.innerHTML = `<span class="loading-indicator">Updating...</span>`;
-  
+
   try {
     // Prepare the data to send
     const data = {
       key: penguinId,
-      location: newLocation
+      location: newLocation,
     };
-    
+
     // Send update to API
-    const response = await fetch(`${penguin_site_json}/locationUpdate`, {
-      method: 'POST',
+    const response = await fetch(`${penguin_site}/locationUpdate`, {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
-    
+
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
     }
-    
+
     // Handle successful update
     await response.json();
-    
+
     // Update local data
     penguin_data[String(penguinId)].location = newLocation;
-    
+
     // Update the display with the new container structure
     specificElement.innerHTML = `
       <div class="location-container">
@@ -544,21 +541,20 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
           <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
         </div>
       </div>`;
-    
+
     // Show success notification
-    const notification = document.createElement('div');
-    notification.className = 'update-notification success';
-    notification.textContent = 'Location updated!';
+    const notification = document.createElement("div");
+    notification.className = "update-notification success";
+    notification.textContent = "Location updated!";
     document.body.appendChild(notification);
-    
+
     // Remove notification after delay
     setTimeout(() => {
       notification.remove();
     }, 3000);
-    
   } catch (error) {
     console.error("Error updating location:", error);
-    
+
     // Restore original content with the new container structure
     specificElement.innerHTML = `
       <div class="location-container">
@@ -567,13 +563,13 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
           <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
         </div>
       </div>`;
-    
+
     // Show error notification
-    const notification = document.createElement('div');
-    notification.className = 'update-notification error';
-    notification.textContent = 'Failed to update location!';
+    const notification = document.createElement("div");
+    notification.className = "update-notification error";
+    notification.textContent = "Failed to update location!";
     document.body.appendChild(notification);
-    
+
     // Remove notification after delay
     setTimeout(() => {
       notification.remove();
