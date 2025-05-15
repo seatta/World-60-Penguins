@@ -262,12 +262,12 @@ table {
   flex-grow: 1;
   width: 100%;
   text-align: center;
-  padding-right: 20px; /* Make space for the edit icon */
+  padding-right: 20px;
 }
 
 .location-actions {
   position: absolute;
-  right: 0;
+  right: -2px;
   display: flex;
   align-items: center;
 }

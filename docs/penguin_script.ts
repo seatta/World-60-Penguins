@@ -116,12 +116,14 @@ function reset_rows(): void {
  * @param number Row to toggle dim
  */
 function dim_row(number: number) {
-  const entry = document.getElementById(`p${number}`);
+  const peng = `p${number}`;
+  const entry = document.getElementById(`${peng}`);
+
   // Check if the row is currently being edited
-  const specificElement = document.querySelector(`#p${number} #specific`);
+  const specificElement = document.querySelector(`#${peng} #specific`);
 
   // If the row is being edited (contains an edit form), do not dim it
-  if (entry && specificElement && !specificElement.querySelector(".edit-form")) {
+  if (entry && ((specificElement && !specificElement.querySelector(".edit-form")) || peng === `p13`)) {
     if (entry.hasAttribute("dimmed")) {
       entry.removeAttribute("dimmed");
       entry.style.opacity = "1";
@@ -210,7 +212,7 @@ function update_penguin(entry: Entry): void {
   const specific_element: any = entry.number < penguin_count ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
 
   if (entry.number < penguin_count) {
-    disguise_element.innerHTML = `<img class="disguise" src="./images/${entry.disguise.toLowerCase()}.png">`;
+    disguise_element.innerHTML = `<img class="disguise" src="./docs/images/w60/${entry.disguise.toLowerCase()}.png">`;
     spawn_element.innerText = entry.spawn;
     specific_element.innerHTML = `
       <div class="location-container">
@@ -230,7 +232,7 @@ function update_penguin(entry: Entry): void {
     if (entry.requirements) warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
     if (entry.warnings) warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
   } else {
-    disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
+    disguise_element.innerHTML = `<img class="disguise" src="./docs/images/w60/polarbear.png" id="icon">`;
     spawn_element.innerText = `${entry.spawn}`;
     points_element.innerText = 1;
     // Gives the polar bear the Hunt for Red Raktuber requirement tooltip
