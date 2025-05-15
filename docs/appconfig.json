@@ -3,7 +3,7 @@
   "description": "Helps locate penguins.",
   "appUrl": "./index.html",
   "configUrl": "./appconfig.json",
-  "iconUrl": "./images/icon.png",
+  "iconUrl": "./images/w60/icon.png",
   "defaultWidth": 400,
   "defaultHeight": 400,
   "minWidth": 400,

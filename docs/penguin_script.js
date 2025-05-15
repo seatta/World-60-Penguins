@@ -141,7 +141,7 @@ function update_penguin(entry) {
     const warnings_element = document.querySelector(`${element} #warnings`);
     const specific_element = entry.number < penguin_count ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
     if (entry.number < penguin_count) {
-        disguise_element.innerHTML = `<img class="disguise" src="./images/${entry.disguise.toLowerCase()}.png">`;
+        disguise_element.innerHTML = `<img class="disguise" src="./images/w60/${entry.disguise.toLowerCase()}.png">`;
         spawn_element.innerText = entry.spawn;
         specific_element.innerHTML = `
       <div class="location-container">
@@ -162,7 +162,7 @@ function update_penguin(entry) {
             warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
     }
     else {
-        disguise_element.innerHTML = `<img class="disguise" src="./images/polarbear.png" id="icon">`;
+        disguise_element.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
         spawn_element.innerText = `${entry.spawn}`;
         points_element.innerText = 1;
         warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
