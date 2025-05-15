@@ -116,12 +116,14 @@ function reset_rows(): void {
  * @param number Row to toggle dim
  */
 function dim_row(number: number) {
-  const entry = document.getElementById(`p${number}`);
+  const peng = `p${number}`;
+  const entry = document.getElementById(`${peng}`);
+
   // Check if the row is currently being edited
-  const specificElement = document.querySelector(`#p${number} #specific`);
+  const specificElement = document.querySelector(`#${peng} #specific`);
 
   // If the row is being edited (contains an edit form), do not dim it
-  if (entry && specificElement && !specificElement.querySelector(".edit-form")) {
+  if (entry && ((specificElement && !specificElement.querySelector(".edit-form")) || peng === `p13`)) {
     if (entry.hasAttribute("dimmed")) {
       entry.removeAttribute("dimmed");
       entry.style.opacity = "1";

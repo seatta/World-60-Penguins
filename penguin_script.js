@@ -69,9 +69,10 @@ function reset_rows() {
     }
 }
 function dim_row(number) {
-    const entry = document.getElementById(`p${number}`);
-    const specificElement = document.querySelector(`#p${number} #specific`);
-    if (entry && specificElement && !specificElement.querySelector(".edit-form")) {
+    const peng = `p${number}`;
+    const entry = document.getElementById(`${peng}`);
+    const specificElement = document.querySelector(`#${peng} #specific`);
+    if (entry && ((specificElement && !specificElement.querySelector(".edit-form")) || peng === `p13`)) {
         if (entry.hasAttribute("dimmed")) {
             entry.removeAttribute("dimmed");
             entry.style.opacity = "1";
