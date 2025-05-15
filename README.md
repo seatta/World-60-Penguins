@@ -6,11 +6,7 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 
 ---
 
-<<<<<<< HEAD
 ![preview image](docs/images/readme/preview.png)
-=======
-![preview image](doc/preview.png)
->>>>>>> 60f0002aa75cda3292a45f64957cf47d1556ac77
 
 | Buttons |            Usage             |
 | :-----: | :--------------------------: |
@@ -21,13 +17,8 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 
 Clicking a penguin toggles it's transparency, making it easier to keep track of penguins.
 
-<<<<<<< HEAD
 <img src="docs/images/readme/unchecked.png" alt="unchecked" width="200"/>
 <img src="docs/images/readme/checked.png" alt="checked" width="200"/>
-=======
-<img src="doc/unchecked.png" alt="unchecked" width="200"/>
-<img src="doc/checked.png" alt="checked" width="200"/>
->>>>>>> 60f0002aa75cda3292a45f64957cf47d1556ac77
 
 ---
 
