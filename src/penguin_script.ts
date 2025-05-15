@@ -119,7 +119,11 @@ function reset_rows(): void {
  */
 function dim_row(number: number) {
   const entry = document.getElementById(`p${number}`);
-  if (entry) {
+  // Check if the row is currently being edited
+  const specificElement = document.querySelector(`#p${number} #specific`);
+  
+  // If the row is being edited (contains an edit form), do not dim it
+  if (entry && specificElement && !specificElement.querySelector('.edit-form')) {
     if (entry.hasAttribute("dimmed")) {
       entry.removeAttribute("dimmed");
       entry.style.opacity = "1";
