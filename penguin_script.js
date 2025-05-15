@@ -385,7 +385,7 @@ async function updateLocation(penguinId, newLocation) {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
-        const result = await response.json();
+        await response.json();
         penguin_data[String(penguinId)].location = newLocation;
         specificElement.innerHTML = `
       <div class="location-container">

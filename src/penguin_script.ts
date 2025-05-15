@@ -531,7 +531,7 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
     }
     
     // Handle successful update
-    const result = await response.json();
+    await response.json();
     
     // Update local data
     penguin_data[String(penguinId)].location = newLocation;
