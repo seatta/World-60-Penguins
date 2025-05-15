@@ -1,5 +1,5 @@
 const penguin_site: string = `https://runescape.wiki/w/Penguin_Hide_and_Seek#Current_World_60_Locations`;
-const penguin_site_json: string = `https://api.w60pengu.in/locations`;
+const penguin_site_json: string = `https://api.w60pengu.in`;
 // const cors_url: string = `https://corsproxy.io/?${encodeURIComponent(penguin_site_json)}`;
 let penguin_data: any;
 let penguin_count: number;
@@ -27,8 +27,7 @@ function start(): void {
   //Auto-refresh every 2 minutes
   setInterval(() => {
     refresh();
-    console.log("Auto-Reload Triggered!");
-  }, 120000);
+  }, 30000);
 }
 
 function toggleInfo(): void {
@@ -36,13 +35,6 @@ function toggleInfo(): void {
   if (box) {
     box.style.display = box.style.display === "none" ? "block" : "none";
   }
-}
-
-/**
- * Opens the wiki page in the browser
- */
-function submit_update(): void {
-  window.open(penguin_site);
 }
 
 /**
@@ -99,7 +91,7 @@ function dim_row(number: number) {
  */
 async function refresh() {
   const now = new Date();
-  if (perform_fetch) penguin_data = await fetch_penguin_data(`${penguin_site_json}?_=${now}`);
+  if (perform_fetch) penguin_data = await fetch_penguin_data(`${penguin_site_json}/locations`);
   penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
   clear_old_data(penguin_count);
   build_penguin_table(penguin_count);
@@ -174,7 +166,7 @@ function update_penguin(entry: Entry): void {
   if (entry.number < penguin_count) {
     disguise_element.innerHTML = `<img class="disguise" src="./images/${entry.disguise.toLowerCase()}.png">`;
     spawn_element.innerText = entry.spawn;
-    specific_element.innerText = entry.specific;
+    specific_element.innerHTML = `${entry.specific} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>`;
     updated_element.innerText = entry.last_updated;
     points_element.innerText = entry.points;
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
@@ -231,6 +223,7 @@ function build_penguin_table(row_amount: number): void {
       <th class="warnings" id="warnings"></th>
       <th class="spawn"><small id="spawn"></small></th>
       <th class="updated"><small id="updated"></small></th>
+      <th class="confirm"><small><span class="confirm-button" onclick="event.stopPropagation(); confirmLocation($PID$)" title="Confirm location">👍</span></small></th>
       </tr>
     </table>
     <table class="nistable pengtable" id="row2">
@@ -254,14 +247,15 @@ function build_penguin_table(row_amount: number): void {
   let row_div: any;
 
   if (!penguin_data || row_amount === 1) {
-    console.log("Creating error div");
     row_div = document.createElement("div");
     add_row(penguins_div, row_div, error_template, "error");
   } else {
     for (let i: number = 1; i <= row_amount; i++) {
       row_div = document.createElement("div");
       row_div.setAttribute("onclick", `dim_row(${i})`);
-      add_row(penguins_div, row_div, i < row_amount ? penguin_template : bear_template, `p${i}`);
+      // Replace $PID$ placeholder with the actual penguin ID
+      const template = i < row_amount ? penguin_template.replace(/\$PID\$/g, i.toString()) : bear_template;
+      add_row(penguins_div, row_div, template, `p${i}`);
     }
   }
 }
@@ -296,7 +290,6 @@ async function fetch_penguin_data(url: string): Promise<any> {
   } catch (error: unknown) {
     setTimeout(() => {
       manual_refresh();
-      console.log("Failed To Fetch: Auto-Reload Triggered!");
     }, 10000);
 
     if (error instanceof Error) {
@@ -304,5 +297,220 @@ async function fetch_penguin_data(url: string): Promise<any> {
     } else {
       console.error("Unknown error occurred");
     }
+  }
+}
+
+/**
+ * Confirms a penguin's location by sending data to the API
+ * @param penguinId The ID of the penguin to confirm
+ */
+async function confirmLocation(penguinId: number): Promise<void> {
+  if (!penguin_data || !penguin_data[String(penguinId)]) {
+    console.error("Cannot confirm location: No penguin data available");
+    return;
+  }
+  
+  const confirmButton = document.querySelector(`#p${penguinId} .confirm-button`) as HTMLElement;
+  
+  if (confirmButton) {
+    // Show loading state
+    const originalContent = confirmButton.innerHTML;
+    confirmButton.innerHTML = "⏳";
+    confirmButton.style.pointerEvents = "none";
+    
+    try {
+      // Prepare the data to send (adjust according to actual API requirements)
+      const data = {
+        key: penguinId,
+      };
+      
+      // Send confirmation to API
+      const response = await fetch(`${penguin_site_json}/locationConfirm`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+      }
+      
+      // Handle successful confirmation
+      const result = await response.json();
+      
+      // Show success state
+      confirmButton.innerHTML = "✓";
+      confirmButton.classList.add("confirmed");
+      
+      // Reset after a delay
+      setTimeout(() => {
+        confirmButton.innerHTML = originalContent;
+        confirmButton.style.pointerEvents = "auto";
+      }, 3000);
+      
+    } catch (error) {
+      console.error("Error confirming location:", error);
+      
+      // Show error state
+      confirmButton.innerHTML = "❌";
+      
+      // Reset after a delay
+      setTimeout(() => {
+        confirmButton.innerHTML = originalContent;
+        confirmButton.style.pointerEvents = "auto";
+      }, 3000);
+    }
+  }
+}
+
+/**
+ * Enables editing of a penguin's location
+ * @param penguinId The ID of the penguin to edit
+ * @param event The click event
+ */
+function editLocation(penguinId: number, event: Event): void {
+  event.stopPropagation(); // Prevent row dimming
+  
+  if (!penguin_data || !penguin_data[String(penguinId)]) {
+    console.error("Cannot edit location: No penguin data available");
+    return;
+  }
+  
+  const specificElement = document.querySelector(`#p${penguinId} #specific`) as HTMLElement;
+  if (!specificElement) return;
+  
+  // If we're already editing, don't create another form
+  if (specificElement.querySelector('.edit-form')) return;
+  
+  const currentLocation = penguin_data[String(penguinId)].location;
+  const originalContent = specificElement.innerHTML;
+  
+  // Create and append edit form
+  const form = document.createElement('div');
+  form.className = 'edit-form';
+  form.innerHTML = `
+    <input type="text" class="location-input" value="${currentLocation}" />
+    <div class="edit-buttons">
+      <button class="save-button" title="Save">✓</button>
+      <button class="cancel-button" title="Cancel">✗</button>
+    </div>
+  `;
+  
+  specificElement.innerHTML = '';
+  specificElement.appendChild(form);
+  
+  // Focus the input
+  const inputField = form.querySelector('.location-input') as HTMLInputElement;
+  inputField.focus();
+  inputField.select();
+  
+  // Add event listeners to buttons
+  const saveButton = form.querySelector('.save-button') as HTMLButtonElement;
+  const cancelButton = form.querySelector('.cancel-button') as HTMLButtonElement;
+  
+  saveButton.addEventListener('click', async (e) => {
+    e.stopPropagation();
+    const newLocation = inputField.value.trim();
+    if (newLocation && newLocation !== currentLocation) {
+      await updateLocation(penguinId, newLocation);
+    } else {
+      specificElement.innerHTML = originalContent;
+    }
+  });
+  
+  cancelButton.addEventListener('click', (e) => {
+    e.stopPropagation();
+    specificElement.innerHTML = originalContent;
+  });
+  
+  // Handle Enter key on input
+  inputField.addEventListener('keyup', async (e) => {
+    if (e.key === 'Enter') {
+      e.stopPropagation();
+      const newLocation = inputField.value.trim();
+      if (newLocation && newLocation !== currentLocation) {
+        await updateLocation(penguinId, newLocation);
+      } else {
+        specificElement.innerHTML = originalContent;
+      }
+    } else if (e.key === 'Escape') {
+      specificElement.innerHTML = originalContent;
+    }
+  });
+}
+
+/**
+ * Updates a penguin's location by sending data to the API
+ * @param penguinId The ID of the penguin to update
+ * @param newLocation The new location text
+ */
+async function updateLocation(penguinId: number, newLocation: string): Promise<void> {
+  const specificElement = document.querySelector(`#p${penguinId} #specific`) as HTMLElement;
+  if (!specificElement) return;
+  
+  // Store original content to restore on error
+  const originalContent = penguin_data[String(penguinId)].location;
+  
+  // Show loading state
+  specificElement.innerHTML = `<span class="loading-indicator">Updating...</span>`;
+  
+  try {
+    // Prepare the data to send
+    const data = {
+      key: penguinId,
+      location: newLocation
+    };
+    
+    // Send update to API
+    const response = await fetch(`${penguin_site_json}/locationUpdate`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
+    }
+    
+    // Handle successful update
+    const result = await response.json();
+    
+    // Update local data
+    penguin_data[String(penguinId)].location = newLocation;
+    
+    // Update the display
+    specificElement.innerHTML = `${newLocation} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+    
+    // Show success notification
+    const notification = document.createElement('div');
+    notification.className = 'update-notification success';
+    notification.textContent = 'Location updated!';
+    document.body.appendChild(notification);
+    
+    // Remove notification after delay
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+    
+  } catch (error) {
+    console.error("Error updating location:", error);
+    
+    // Restore original content
+    specificElement.innerHTML = `${originalContent} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+    
+    // Show error notification
+    const notification = document.createElement('div');
+    notification.className = 'update-notification error';
+    notification.textContent = 'Failed to update location!';
+    document.body.appendChild(notification);
+    
+    // Remove notification after delay
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
   }
 }
