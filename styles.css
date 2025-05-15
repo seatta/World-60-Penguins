@@ -153,8 +153,8 @@ table {
   cursor: pointer;
   font-size: 12px;
   opacity: 0.7;
-  margin-left: 5px;
   transition: all 0.2s ease;
+  margin-right: 5px;
 }
 
 .edit-icon:hover {
@@ -237,4 +237,27 @@ table {
 @keyframes fadeOut {
   from { opacity: 1; }
   to { opacity: 0; }
+}
+
+/* Location container styling */
+.location-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: relative;
+}
+
+.location-text {
+  flex-grow: 1;
+  width: 100%;
+  text-align: center;
+  padding-right: 20px; /* Make space for the edit icon */
+}
+
+.location-actions {
+  position: absolute;
+  right: 0;
+  display: flex;
+  align-items: center;
 }

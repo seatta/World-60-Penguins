@@ -7,6 +7,9 @@ let penguin_count: number;
 // This is just for testing
 const perform_fetch: boolean = true;
 
+// Local storage keys
+const INFO_BOX_STORAGE_KEY: string = 'w60penguins_infobox_state';
+
 type Entry = {
   number: number;
   disguise: string;
@@ -24,16 +27,57 @@ type Entry = {
 function start(): void {
   reset_rows();
   refresh();
-  //Auto-refresh every 2 minutes
+  
+  // Load info box state from local storage
+  loadInfoBoxState();
+  
+  //Auto-refresh every 30 seconds
   setInterval(() => {
     refresh();
   }, 30000);
 }
 
+/**
+ * Loads the info box state from local storage and applies it
+ */
+function loadInfoBoxState(): void {
+  const box = document.getElementById("infoBox");
+  const toggle = document.getElementById("infoToggle");
+  
+  if (box && toggle) {
+    try {
+      const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
+      if (savedState === 'closed') {
+        box.style.display = 'none';
+        toggle.textContent = 'Click to expand';
+      } else {
+        box.style.display = 'block';
+        toggle.textContent = 'Click to collapse';
+      }
+    } catch (error) {
+      console.error('Error accessing localStorage:', error);
+    }
+  }
+}
+
+/**
+ * Toggles the info box visibility and saves the state to local storage
+ */
 function toggleInfo(): void {
   const box = document.getElementById("infoBox");
-  if (box) {
-    box.style.display = box.style.display === "none" ? "block" : "none";
+  const toggle = document.getElementById("infoToggle");
+  
+  if (box && toggle) {
+    const newState = box.style.display === "none" ? "block" : "none";
+    box.style.display = newState;
+    toggle.textContent = newState === "none" ? "Click to expand" : "Click to collapse";
+    
+    // Save state to local storage
+    try {
+      localStorage.setItem(INFO_BOX_STORAGE_KEY, newState === "none" ? "closed" : "open");
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
   }
 }
 
@@ -75,7 +119,11 @@ function reset_rows(): void {
  */
 function dim_row(number: number) {
   const entry = document.getElementById(`p${number}`);
-  if (entry) {
+  // Check if the row is currently being edited
+  const specificElement = document.querySelector(`#p${number} #specific`);
+  
+  // If the row is being edited (contains an edit form), do not dim it
+  if (entry && specificElement && !specificElement.querySelector('.edit-form')) {
     if (entry.hasAttribute("dimmed")) {
       entry.removeAttribute("dimmed");
       entry.style.opacity = "1";
@@ -166,7 +214,13 @@ function update_penguin(entry: Entry): void {
   if (entry.number < penguin_count) {
     disguise_element.innerHTML = `<img class="disguise" src="./images/${entry.disguise.toLowerCase()}.png">`;
     spawn_element.innerText = entry.spawn;
-    specific_element.innerHTML = `${entry.specific} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>`;
+    specific_element.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${entry.specific}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
     updated_element.innerText = entry.last_updated;
     points_element.innerText = entry.points;
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
@@ -477,13 +531,19 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
     }
     
     // Handle successful update
-    const result = await response.json();
+    await response.json();
     
     // Update local data
     penguin_data[String(penguinId)].location = newLocation;
     
-    // Update the display
-    specificElement.innerHTML = `${newLocation} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+    // Update the display with the new container structure
+    specificElement.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${newLocation}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
     
     // Show success notification
     const notification = document.createElement('div');
@@ -499,8 +559,14 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
   } catch (error) {
     console.error("Error updating location:", error);
     
-    // Restore original content
-    specificElement.innerHTML = `${originalContent} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+    // Restore original content with the new container structure
+    specificElement.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${originalContent}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
     
     // Show error notification
     const notification = document.createElement('div');

@@ -4,17 +4,48 @@ const penguin_site_json = `https://api.w60pengu.in`;
 let penguin_data;
 let penguin_count;
 const perform_fetch = true;
+const INFO_BOX_STORAGE_KEY = 'w60penguins_infobox_state';
 function start() {
     reset_rows();
     refresh();
+    loadInfoBoxState();
     setInterval(() => {
         refresh();
     }, 30000);
 }
+function loadInfoBoxState() {
+    const box = document.getElementById("infoBox");
+    const toggle = document.getElementById("infoToggle");
+    if (box && toggle) {
+        try {
+            const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
+            if (savedState === 'closed') {
+                box.style.display = 'none';
+                toggle.textContent = 'Click to expand';
+            }
+            else {
+                box.style.display = 'block';
+                toggle.textContent = 'Click to collapse';
+            }
+        }
+        catch (error) {
+            console.error('Error accessing localStorage:', error);
+        }
+    }
+}
 function toggleInfo() {
     const box = document.getElementById("infoBox");
-    if (box) {
-        box.style.display = box.style.display === "none" ? "block" : "none";
+    const toggle = document.getElementById("infoToggle");
+    if (box && toggle) {
+        const newState = box.style.display === "none" ? "block" : "none";
+        box.style.display = newState;
+        toggle.textContent = newState === "none" ? "Click to expand" : "Click to collapse";
+        try {
+            localStorage.setItem(INFO_BOX_STORAGE_KEY, newState === "none" ? "closed" : "open");
+        }
+        catch (error) {
+            console.error('Error saving to localStorage:', error);
+        }
     }
 }
 function manual_refresh() {
@@ -40,7 +71,8 @@ function reset_rows() {
 }
 function dim_row(number) {
     const entry = document.getElementById(`p${number}`);
-    if (entry) {
+    const specificElement = document.querySelector(`#p${number} #specific`);
+    if (entry && specificElement && !specificElement.querySelector('.edit-form')) {
         if (entry.hasAttribute("dimmed")) {
             entry.removeAttribute("dimmed");
             entry.style.opacity = "1";
@@ -111,7 +143,13 @@ function update_penguin(entry) {
     if (entry.number < penguin_count) {
         disguise_element.innerHTML = `<img class="disguise" src="./images/${entry.disguise.toLowerCase()}.png">`;
         spawn_element.innerText = entry.spawn;
-        specific_element.innerHTML = `${entry.specific} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>`;
+        specific_element.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${entry.specific}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
         updated_element.innerText = entry.last_updated;
         points_element.innerText = entry.points;
         if (entry.number == penguin_count - 1)
@@ -347,9 +385,15 @@ async function updateLocation(penguinId, newLocation) {
         if (!response.ok) {
             throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
-        const result = await response.json();
+        await response.json();
         penguin_data[String(penguinId)].location = newLocation;
-        specificElement.innerHTML = `${newLocation} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+        specificElement.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${newLocation}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
         const notification = document.createElement('div');
         notification.className = 'update-notification success';
         notification.textContent = 'Location updated!';
@@ -360,7 +404,13 @@ async function updateLocation(penguinId, newLocation) {
     }
     catch (error) {
         console.error("Error updating location:", error);
-        specificElement.innerHTML = `${originalContent} <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>`;
+        specificElement.innerHTML = `
+      <div class="location-container">
+        <div class="location-text">${originalContent}</div>
+        <div class="location-actions">
+          <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${penguinId}, event)" title="Edit location">✏️</span>
+        </div>
+      </div>`;
         const notification = document.createElement('div');
         notification.className = 'update-notification error';
         notification.textContent = 'Failed to update location!';
