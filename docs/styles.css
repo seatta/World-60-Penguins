@@ -6,10 +6,15 @@ body {
 #container {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100vh - 8px);
+  overflow: hidden;
 }
 
 .info-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
   background-color: #3b3b3b;
   color: #fff;
   padding: 10px 16px;
@@ -19,6 +24,28 @@ body {
   border-bottom: 1px solid #444;
   user-select: none;
   text-align: center;
+  height: 30;
+}
+#infoToggleText {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+#infoToggle button {
+  cursor: pointer;
+  font-size: 15px;
+  line-height: 1;
+  user-select: none;
+  display: inline-block;
+  align-self: center;
+  width: 80px;
+}
+
+#infoToggle button,
+#infoToggle button::after,
+#infoToggle button::before {
+  border: none;
 }
 
 ul {
@@ -29,10 +56,11 @@ ul {
   flex-direction: column;
   gap: 8px;
   list-style-position: inside;
+  list-style-type: disc;
 }
 
 ul li {
-  display: b;
+  display: list-item;
 }
 
 table {
@@ -42,7 +70,7 @@ table {
 }
 
 .pengs {
-  margin-bottom: 46px;
+  margin-bottom: 8px;
   max-height: calc(100vh - 48px);
   overflow-y: auto;
 }
@@ -55,15 +83,6 @@ table {
   font-size: small;
   margin-bottom: 4px;
   width: calc(100% - 8px);
-}
-
-.buttons {
-  width: 100%;
-  height: fit-content;
-  bottom: 0;
-  position: fixed;
-  padding-top: 2px;
-  z-index: 999;
 }
 
 .disguise,
@@ -91,16 +110,15 @@ table {
 .req {
   padding: 0px 5px 0px 5px;
   margin: 2px;
+  color: black;
 }
 
 .war {
-  color: black;
   background: gold;
   border-radius: 10%;
 }
 
 .req {
-  color: black;
   background: lightblue;
   border-radius: 50%;
 }
@@ -119,15 +137,6 @@ table {
 
 .nistable tr:nth-child(odd) {
   background: none;
-}
-
-#buttontable tr th {
-  width: calc(100% / 3);
-}
-
-.nisbutton[disabled="true"] {
-  opacity: 0.2;
-  pointer-events: none;
 }
 
 .confirm {
@@ -270,4 +279,22 @@ table {
   right: -2px;
   display: flex;
   align-items: center;
+}
+
+#progressContainer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 6px;
+  background-color: #eee;
+  border-top: 1px solid #ccc;
+  z-index: 1000;
+}
+
+#progressBar {
+  height: 100%;
+  width: 0%;
+  background-color: #4caf50;
+  transition: width 0.1s linear;
 }

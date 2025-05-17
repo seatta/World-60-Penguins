@@ -10,8 +10,7 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 
 | Buttons |            Usage             |
 | :-----: | :--------------------------: |
-|   ❌    | Clears all checked penguins  |
-|    ↻    |    Refreshes all penguins    |
+|  Reset  | Clears all checked penguins  |
 |   ✏️    |  Edit a penguin's location   |
 |   👍    | Confirm a penguin's location |
 

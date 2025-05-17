@@ -8,13 +8,25 @@ function start() {
     reset_rows();
     refresh();
     loadInfoBoxState();
+    animateProgressBar(30000);
     setInterval(() => {
         refresh();
+        animateProgressBar(30000);
     }, 30000);
+}
+function animateProgressBar(duration) {
+    const bar = document.getElementById("progressBar");
+    if (!bar)
+        return;
+    bar.style.transition = "none";
+    bar.style.width = "0%";
+    void bar.offsetWidth;
+    bar.style.transition = `width ${duration}ms linear`;
+    bar.style.width = "100%";
 }
 function loadInfoBoxState() {
     const box = document.getElementById("infoBox");
-    const toggle = document.getElementById("infoToggle");
+    const toggle = document.getElementById("infoToggleText");
     if (box && toggle) {
         try {
             const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
@@ -34,7 +46,7 @@ function loadInfoBoxState() {
 }
 function toggleInfo() {
     const box = document.getElementById("infoBox");
-    const toggle = document.getElementById("infoToggle");
+    const toggle = document.getElementById("infoToggleText");
     if (box && toggle) {
         const newState = box.style.display === "none" ? "block" : "none";
         box.style.display = newState;
