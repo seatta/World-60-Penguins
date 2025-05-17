@@ -26,20 +26,20 @@ function start(): void {
   reset_rows();
   refresh();
   loadInfoBoxState();
-
-  // Start progress animation
-  animateProgressBar(30000);
+  animateProgressBar(penguin_data ? 30000 : 10000);
 
   // Auto-refresh every 30 seconds
-  setInterval(() => {
-    refresh();
-    animateProgressBar(30000);
-  }, 30000);
+  setInterval(
+    async () => {
+      await refresh();
+      animateProgressBar(penguin_data ? 30000 : 10000);
+    },
+    penguin_data ? 30000 : 10000
+  );
 }
 
 /**
  * Animates the progress bar from 0-100% througout a duration
- *
  * @param duration Duration of the progress bar in ms
  */
 function animateProgressBar(duration: number): void {
@@ -99,23 +99,6 @@ function toggleInfo(): void {
     } catch (error) {
       console.error("Error saving to localStorage:", error);
     }
-  }
-}
-
-/**
- * This is the function for when the refresh button is clicked
- */
-function manual_refresh(): void {
-  var button = document.getElementById("refreshButton");
-
-  //Limits manual refreshes to every 10 seconds
-  if (button && !button.hasAttribute("disabled")) {
-    refresh();
-    button.setAttribute("disabled", "true");
-
-    setTimeout(() => {
-      button?.removeAttribute("disabled");
-    }, 10000);
   }
 }
 
@@ -214,6 +197,8 @@ function get_penguin_info(n: number): Entry {
     spawn: n < penguin_count ? data["name"] : penguin_data[13]["name"],
     specific: n < penguin_count ? data["location"] : "",
     last_updated: n < penguin_count ? time_string : "",
+
+    // The new API doesn't have warning or requirement json keys, but I'm leaving them here incase they ever get added.
     warnings: n < penguin_count ? data["warning"] : "",
     requirements: data["requirements"],
   };
@@ -280,17 +265,18 @@ function build_penguin_table(row_amount: number): void {
       </tr>
   </table>
   <table class="nistable pengtable" id="row2">
-      <tr>
-      <th><small id="specific">Auto-Reload will trigger in 10 seconds</small></th>
-      </tr>
-
-      <tr>
-      <th><small id="specific">If the problem persists, please consider submitting an issue at:</small></th>
-      </tr>
-
-      <tr>
-      <th><small id="specific">https://github.com/seatta/World-60-Penguins/issues</small></th>
-      </tr>`;
+    <tr>
+      <th>
+        <small id="specific">
+        Auto-Reload will trigger in 10 seconds <br> <br>
+        If the problem persists, please consider submitting an issue at:<br>
+          <a href="https://github.com/seatta/World-60-Penguins/issues" target="_blank" rel="noopener noreferrer">
+            https://github.com/seatta/World-60-Penguins/issues
+          </a>
+        </small>
+      </th>
+    </tr>
+  </table>`;
   const penguin_template: string = `
   <div class="peng-entry">
     <table class="nistable" id="row1">
@@ -366,7 +352,7 @@ async function fetch_penguin_data(url: string): Promise<any> {
     return await response.json();
   } catch (error: unknown) {
     setTimeout(() => {
-      manual_refresh();
+      refresh();
     }, 10000);
 
     if (error instanceof Error) {

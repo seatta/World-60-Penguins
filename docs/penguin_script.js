@@ -8,11 +8,11 @@ function start() {
     reset_rows();
     refresh();
     loadInfoBoxState();
-    animateProgressBar(30000);
-    setInterval(() => {
-        refresh();
-        animateProgressBar(30000);
-    }, 30000);
+    animateProgressBar(penguin_data ? 30000 : 10000);
+    setInterval(async () => {
+        await refresh();
+        animateProgressBar(penguin_data ? 30000 : 10000);
+    }, penguin_data ? 30000 : 10000);
 }
 function animateProgressBar(duration) {
     const bar = document.getElementById("progressBar");
@@ -57,16 +57,6 @@ function toggleInfo() {
         catch (error) {
             console.error("Error saving to localStorage:", error);
         }
-    }
-}
-function manual_refresh() {
-    var button = document.getElementById("refreshButton");
-    if (button && !button.hasAttribute("disabled")) {
-        refresh();
-        button.setAttribute("disabled", "true");
-        setTimeout(() => {
-            button?.removeAttribute("disabled");
-        }, 10000);
     }
 }
 function reset_rows() {
@@ -193,17 +183,18 @@ function build_penguin_table(row_amount) {
       </tr>
   </table>
   <table class="nistable pengtable" id="row2">
-      <tr>
-      <th><small id="specific">Auto-Reload will trigger in 10 seconds</small></th>
-      </tr>
-
-      <tr>
-      <th><small id="specific">If the problem persists, please consider submitting an issue at:</small></th>
-      </tr>
-
-      <tr>
-      <th><small id="specific">https://github.com/seatta/World-60-Penguins/issues</small></th>
-      </tr>`;
+    <tr>
+      <th>
+        <small id="specific">
+        Auto-Reload will trigger in 10 seconds <br> <br>
+        If the problem persists, please consider submitting an issue at:<br>
+          <a href="https://github.com/seatta/World-60-Penguins/issues" target="_blank" rel="noopener noreferrer">
+            https://github.com/seatta/World-60-Penguins/issues
+          </a>
+        </small>
+      </th>
+    </tr>
+  </table>`;
     const penguin_template = `
   <div class="peng-entry">
     <table class="nistable" id="row1">
@@ -265,7 +256,7 @@ async function fetch_penguin_data(url) {
     }
     catch (error) {
         setTimeout(() => {
-            manual_refresh();
+            refresh();
         }, 10000);
         if (error instanceof Error) {
             console.error("Error fetching data:", error.message);
