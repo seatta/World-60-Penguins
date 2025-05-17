@@ -88,10 +88,12 @@ table {
 .disguise,
 .points,
 .warnings {
-  padding: 0px 4px 0px 4px;
+  padding: 1px 4px 1px 4px;
 }
 .disguise {
   width: 24px;
+  height: 32px;
+  object-fit: contain;
 }
 
 .points {
