@@ -7,7 +7,11 @@
   </head>
   <body class="nis" onload="start()">
     <div id="container">
-      <div id="infoToggle" class="info-banner" onclick="toggleInfo()">Click to collapse</div>
+      <div id="infoToggle" class="info-banner" onclick="toggleInfo()">
+        <span id="infoToggleText">Click to collapse</span>
+        <button title="Reset Spied Penguins" class="nisbutton" id="resetButton" onclick="event.stopPropagation(); reset_rows();">Reset</button>
+      </div>
+
       <div id="infoBox" style="display: block" class="nispanel">
         <ul>
           <li>Penguins move independently on all worlds - please double check that you're on World 60.</li>
@@ -17,14 +21,10 @@
           <li>Click 👍 to confirm, or ✏️ to edit a penguin's location.</li>
         </ul>
       </div>
+
       <div class="pengs"></div>
-      <div class="buttons">
-        <table id="buttonTable">
-          <tr>
-            <th title="Reset Spied Penguins" class="nisbutton" onclick="reset_rows()" id="resetButton">❌</th>
-            <th title="Refresh Penguins" class="nisbutton" onclick="manual_refresh()" id="refreshButton">↻</th>
-          </tr>
-        </table>
+      <div id="progressContainer">
+        <div id="progressBar"></div>
       </div>
     </div>
   </body>

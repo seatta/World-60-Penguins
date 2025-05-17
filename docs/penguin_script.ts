@@ -25,14 +25,37 @@ type Entry = {
 function start(): void {
   reset_rows();
   refresh();
-
-  // Load info box state from local storage
   loadInfoBoxState();
+
+  // Start progress animation
+  animateProgressBar(30000);
 
   // Auto-refresh every 30 seconds
   setInterval(() => {
     refresh();
+    animateProgressBar(30000);
   }, 30000);
+}
+
+/**
+ * Animates the progress bar from 0-100% througout a duration
+ *
+ * @param duration Duration of the progress bar in ms
+ */
+function animateProgressBar(duration: number): void {
+  const bar = document.getElementById("progressBar") as HTMLElement;
+  if (!bar) return;
+
+  // Reset bar immediately
+  bar.style.transition = "none";
+  bar.style.width = "0%";
+
+  // Trigger reflow so the reset takes effect before animation
+  void bar.offsetWidth;
+
+  // Animate to 100%
+  bar.style.transition = `width ${duration}ms linear`;
+  bar.style.width = "100%";
 }
 
 /**
@@ -40,7 +63,7 @@ function start(): void {
  */
 function loadInfoBoxState(): void {
   const box = document.getElementById("infoBox");
-  const toggle = document.getElementById("infoToggle");
+  const toggle = document.getElementById("infoToggleText");
 
   if (box && toggle) {
     try {
@@ -63,7 +86,7 @@ function loadInfoBoxState(): void {
  */
 function toggleInfo(): void {
   const box = document.getElementById("infoBox");
-  const toggle = document.getElementById("infoToggle");
+  const toggle = document.getElementById("infoToggleText");
 
   if (box && toggle) {
     const newState = box.style.display === "none" ? "block" : "none";
