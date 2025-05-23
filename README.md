@@ -14,7 +14,7 @@ An [Alt1][alt1_url] plugin that uses the [Penguin Hide & Seek Discord][peng_url]
 |   ✏️    |  Edit a penguin's location   |
 |   👍    | Confirm a penguin's location |
 
-Clicking a penguin toggles it's transparency, making it easier to keep track of penguins.
+Clicking a penguin toggles its transparency, making it easier to keep track of penguins.
 
 <img src="docs/images/readme/unchecked.png" alt="unchecked" width="200"/>
 <img src="docs/images/readme/checked.png" alt="checked" width="200"/>
