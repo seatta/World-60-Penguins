@@ -8,7 +8,6 @@ function start() {
     loadInfoBoxState();
     watchEditForm();
     async function loopRefresh() {
-        const bar = document.getElementById("progressBar");
         while (document.querySelector(".edit-form")) {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }

@@ -26,7 +26,6 @@ function start(): void {
 
   async function loopRefresh(): Promise<void> {
     // Wait while .edit-form exists to avoid refreshing mid-edit, which would remove the element.
-    const bar = document.getElementById("progressBar") as HTMLElement;
     while (document.querySelector(".edit-form")) {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
