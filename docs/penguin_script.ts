@@ -1,12 +1,10 @@
-const penguin_site: string = `https://api.w60pengu.in`;
+const PENGUIN_SITE: string = `https://api.w60pengu.in`;
+// Used to toggle fetching for testing
+const PERFORM_FETCH: boolean = true;
+// Local storage key for retaining infobox state
+const INFO_BOX_STORAGE_KEY: string = "w60penguins_infobox_state";
 let penguin_data: any;
 let penguin_count: number;
-
-// This is just for testing
-const perform_fetch: boolean = true;
-
-// Local storage keys
-const INFO_BOX_STORAGE_KEY: string = "w60penguins_infobox_state";
 
 type Entry = {
   number: number;
@@ -23,7 +21,7 @@ type Entry = {
  * Main entrypoint of the script
  **/
 function start(): void {
-  reset_rows();
+  resetRows();
   refresh();
   loadInfoBoxState();
   animateProgressBar(penguin_data ? 30000 : 10000);
@@ -105,7 +103,7 @@ function toggleInfo(): void {
 /**
  * Resets or undims all rows
  */
-function reset_rows(): void {
+function resetRows(): void {
   for (let n: number = 1; n < penguin_count + 1; n++) {
     const row = document.getElementById(`p${n}`);
     if (row) {
@@ -121,7 +119,7 @@ function reset_rows(): void {
  * Toggles opacity for a table row
  * @param number Row to toggle dim
  */
-function dim_row(number: number) {
+function dimRow(number: number) {
   const peng = `p${number}`;
   const entry = document.getElementById(`${peng}`);
 
@@ -145,14 +143,14 @@ function dim_row(number: number) {
  */
 async function refresh() {
   const now = new Date();
-  if (perform_fetch) penguin_data = await fetch_penguin_data(`${penguin_site}/locations`);
+  if (PERFORM_FETCH) penguin_data = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
   penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
-  clear_old_data(penguin_count);
-  build_penguin_table(penguin_count);
+  clearOldData(penguin_count);
+  buildPenguinTable(penguin_count);
 
   if (penguin_data) {
     for (let n: number = 1; n <= penguin_count; n++) {
-      update_penguin(get_penguin_info(n));
+      updatePenguin(getPenguinInfo(n));
     }
   }
 }
@@ -161,7 +159,7 @@ async function refresh() {
  * Clears the data for a penguin
  * @param count Number of penguin
  */
-function clear_old_data(count: number): void {
+function clearOldData(count: number): void {
   document.querySelector("#error")?.remove();
   for (let i: number = 1; i <= count; i++) {
     let disguise: any = i < penguin_count ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
@@ -178,7 +176,7 @@ function clear_old_data(count: number): void {
  * @param n Number of penguin
  * @returns Entry of n penguin
  */
-function get_penguin_info(n: number): Entry {
+function getPenguinInfo(n: number): Entry {
   const data = n < penguin_count ? penguin_data[String(n)] : "";
   const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
   const time_string =
@@ -210,7 +208,7 @@ function get_penguin_info(n: number): Entry {
  * Updates an Entry's information
  * @param entry Entry for the penguin/bear to update
  */
-function update_penguin(entry: Entry): void {
+function updatePenguin(entry: Entry): void {
   const element: string = entry.number < penguin_count ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
   const disguise_element: any = document.querySelector(`${element} #disguise`);
   const points_element: any = document.querySelector(`${element} #points`);
@@ -252,7 +250,7 @@ function update_penguin(entry: Entry): void {
  * Builds the penguin table based on an amount of rows
  * @param row_amount Amount of rows to add
  */
-function build_penguin_table(row_amount: number): void {
+function buildPenguinTable(row_amount: number): void {
   const penguins_div: any = document.querySelector(".pengs");
   const error_template: string = `
     <table class="nistable" id="row1">
@@ -311,14 +309,14 @@ function build_penguin_table(row_amount: number): void {
 
   if (!penguin_data || row_amount === 1) {
     row_div = document.createElement("div");
-    add_row(penguins_div, row_div, error_template, "error");
+    addRow(penguins_div, row_div, error_template, "error");
   } else {
     for (let i: number = 1; i <= row_amount; i++) {
       row_div = document.createElement("div");
       row_div.setAttribute("onclick", `dim_row(${i})`);
       // Replace $PID$ placeholder with the actual penguin ID
       const template = i < row_amount ? penguin_template.replace(/\$PID\$/g, i.toString()) : bear_template;
-      add_row(penguins_div, row_div, template, `p${i}`);
+      addRow(penguins_div, row_div, template, `p${i}`);
     }
   }
 }
@@ -330,7 +328,7 @@ function build_penguin_table(row_amount: number): void {
  * @param template HTML string to add to row_div
  * @param id Id to assign row_div
  */
-function add_row(penguins_div: any, row_div: any, template: string, id: string): void {
+function addRow(penguins_div: any, row_div: any, template: string, id: string): void {
   if (!document.querySelector(`#${id}`)) {
     row_div.id = id;
     row_div.innerHTML = template;
@@ -343,7 +341,7 @@ function add_row(penguins_div: any, row_div: any, template: string, id: string):
  * @param url Url to fetch JSON data from
  * @returns Promise<JSON>
  */
-async function fetch_penguin_data(url: string): Promise<any> {
+async function fetchPenguinData(url: string): Promise<any> {
   try {
     const response = await fetch(url);
     if (!response.ok) {
@@ -388,7 +386,7 @@ async function confirmLocation(penguinId: number): Promise<void> {
       };
 
       // Send confirmation to API
-      const response = await fetch(`${penguin_site}/locationConfirm`, {
+      const response = await fetch(`${PENGUIN_SITE}/locationConfirm`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -526,7 +524,7 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
     };
 
     // Send update to API
-    const response = await fetch(`${penguin_site}/locationUpdate`, {
+    const response = await fetch(`${PENGUIN_SITE}/locationUpdate`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
