@@ -8,11 +8,13 @@ function start() {
     resetRows();
     refresh();
     loadInfoBoxState();
-    animateProgressBar(penguinData ? 30000 : 10000);
-    setInterval(async () => {
+    async function loopRefresh() {
         await refresh();
-        animateProgressBar(penguinData ? 30000 : 10000);
-    }, penguinData ? 30000 : 10000);
+        const refreshRate = penguinData ? 30000 : 10000;
+        animateProgressBar(refreshRate);
+        setTimeout(loopRefresh, refreshRate);
+    }
+    loopRefresh();
 }
 function animateProgressBar(duration) {
     const bar = document.getElementById("progressBar");

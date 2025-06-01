@@ -24,16 +24,15 @@ function start(): void {
   resetRows();
   refresh();
   loadInfoBoxState();
-  animateProgressBar(penguinData ? 30000 : 10000);
 
-  // Auto-refresh every 30 seconds
-  setInterval(
-    async () => {
-      await refresh();
-      animateProgressBar(penguinData ? 30000 : 10000);
-    },
-    penguinData ? 30000 : 10000
-  );
+  async function loopRefresh(): Promise<void> {
+    await refresh();
+    const refreshRate = penguinData ? 30000 : 10000;
+    animateProgressBar(refreshRate);
+    setTimeout(loopRefresh, refreshRate);
+  }
+
+  loopRefresh();
 }
 
 /**
