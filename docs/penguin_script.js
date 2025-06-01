@@ -5,16 +5,32 @@ const INFO_BOX_STORAGE_KEY = "w60penguins_infobox_state";
 let penguinData;
 let penguinCount;
 function start() {
-    resetRows();
-    refresh();
     loadInfoBoxState();
+    watchEditForm();
     async function loopRefresh() {
+        const bar = document.getElementById("progressBar");
+        while (document.querySelector(".edit-form")) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
         await refresh();
-        const refreshRate = penguinData ? 30000 : 10000;
-        animateProgressBar(refreshRate);
-        setTimeout(loopRefresh, refreshRate);
+        let delay = penguinData ? 3000 : 1000;
+        animateProgressBar(delay);
+        setTimeout(loopRefresh, delay);
     }
     loopRefresh();
+}
+function watchEditForm() {
+    const bar = document.getElementById("progressBar");
+    const observer = new MutationObserver(() => {
+        const editing = document.querySelector(".edit-form") !== null;
+        if (bar) {
+            bar.style.backgroundColor = editing ? "#f28b82" : "#4caf50";
+        }
+    });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
 }
 function animateProgressBar(duration) {
     const bar = document.getElementById("progressBar");
@@ -32,6 +48,7 @@ function loadInfoBoxState() {
     if (box && toggle) {
         try {
             const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
+            console.log(savedState);
             if (savedState === "closed") {
                 box.style.display = "none";
                 toggle.textContent = "Click to expand";

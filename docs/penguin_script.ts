@@ -21,18 +21,43 @@ type Entry = {
  * Main entrypoint of the script
  **/
 function start(): void {
-  resetRows();
-  refresh();
   loadInfoBoxState();
+  watchEditForm(); // ← watch for live editing
 
   async function loopRefresh(): Promise<void> {
+    // Wait while .edit-form exists to avoid refreshing mid-edit, which would remove the element.
+    const bar = document.getElementById("progressBar") as HTMLElement;
+    while (document.querySelector(".edit-form")) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
     await refresh();
-    const refreshRate = penguinData ? 30000 : 10000;
-    animateProgressBar(refreshRate);
-    setTimeout(loopRefresh, refreshRate);
+    let delay = penguinData ? 3000 : 1000;
+    animateProgressBar(delay);
+
+    setTimeout(loopRefresh, delay);
   }
 
   loopRefresh();
+}
+
+/**
+ * Watches for the .edit-form element and changes the auto-refresh progress bar accordingly
+ */
+function watchEditForm(): void {
+  const bar = document.getElementById("progressBar") as HTMLElement;
+
+  const observer = new MutationObserver(() => {
+    const editing = document.querySelector(".edit-form") !== null;
+    if (bar) {
+      bar.style.backgroundColor = editing ? "#f28b82" : "#4caf50";
+    }
+  });
+
+  observer.observe(document.body, {
+    childList: true,
+    subtree: true,
+  });
 }
 
 /**
@@ -65,6 +90,7 @@ function loadInfoBoxState(): void {
   if (box && toggle) {
     try {
       const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
+      console.log(savedState);
       if (savedState === "closed") {
         box.style.display = "none";
         toggle.textContent = "Click to expand";
