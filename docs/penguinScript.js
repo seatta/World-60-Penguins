@@ -2,17 +2,35 @@
 const PENGUIN_SITE = `https://api.w60pengu.in`;
 const PERFORM_FETCH = true;
 const INFO_BOX_STORAGE_KEY = "w60penguins_infobox_state";
-let penguin_data;
-let penguin_count;
+let penguinData;
+let penguinCount;
 function start() {
-    resetRows();
-    refresh();
     loadInfoBoxState();
-    animateProgressBar(penguin_data ? 30000 : 10000);
-    setInterval(async () => {
+    watchEditForm();
+    async function loopRefresh() {
+        const bar = document.getElementById("progressBar");
+        while (document.querySelector(".edit-form")) {
+            await new Promise((resolve) => setTimeout(resolve, 500));
+        }
         await refresh();
-        animateProgressBar(penguin_data ? 30000 : 10000);
-    }, penguin_data ? 30000 : 10000);
+        let delay = penguinData ? 30000 : 10000;
+        animateProgressBar(delay);
+        setTimeout(loopRefresh, delay);
+    }
+    loopRefresh();
+}
+function watchEditForm() {
+    const bar = document.getElementById("progressBar");
+    const observer = new MutationObserver(() => {
+        const editing = document.querySelector(".edit-form") !== null;
+        if (bar) {
+            bar.style.backgroundColor = editing ? "#f28b82" : "#4caf50";
+        }
+    });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+    });
 }
 function animateProgressBar(duration) {
     const bar = document.getElementById("progressBar");
@@ -30,6 +48,7 @@ function loadInfoBoxState() {
     if (box && toggle) {
         try {
             const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
+            console.log(savedState);
             if (savedState === "closed") {
                 box.style.display = "none";
                 toggle.textContent = "Click to expand";
@@ -60,7 +79,7 @@ function toggleInfo() {
     }
 }
 function resetRows() {
-    for (let n = 1; n < penguin_count + 1; n++) {
+    for (let n = 1; n < penguinCount + 1; n++) {
         const row = document.getElementById(`p${n}`);
         if (row) {
             row.style.opacity = "1";
@@ -86,36 +105,20 @@ function dimRow(number) {
     }
 }
 async function refresh() {
-    const now = new Date();
     if (PERFORM_FETCH)
-        penguin_data = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
-    penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
-    clearOldData(penguin_count);
-    buildPenguinTable(penguin_count);
-    if (penguin_data) {
-        for (let n = 1; n <= penguin_count; n++) {
+        penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
+    penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
+    buildPenguinTable(penguinCount);
+    if (penguinData) {
+        for (let n = 1; n <= penguinCount; n++) {
             updatePenguin(getPenguinInfo(n));
         }
     }
 }
-function clearOldData(count) {
-    document.querySelector("#error")?.remove();
-    for (let i = 1; i <= count; i++) {
-        let disguise = i < penguin_count ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
-        let warning = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
-        let penguin_entry = document.querySelector(`#p${i}`);
-        if (penguin_entry && penguin_entry.hasAttribute("hidden"))
-            penguin_entry.removeAttribute("hidden");
-        while (disguise && disguise.hasChildNodes())
-            disguise.removeChild(disguise.firstChild);
-        while (warning && warning.hasChildNodes())
-            warning.removeChild(warning.firstChild);
-    }
-}
 function getPenguinInfo(n) {
-    const data = n < penguin_count ? penguin_data[String(n)] : "";
+    const data = n < penguinCount ? penguinData[String(n)] : "";
     const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
-    const time_string = timeDiffInMinutes > 1440
+    const timeString = timeDiffInMinutes > 1440
         ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
         : timeDiffInMinutes > 60
             ? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
@@ -124,55 +127,61 @@ function getPenguinInfo(n) {
                 : "<1m";
     const entry = {
         number: n,
-        disguise: n < penguin_count ? data["disguise"] : "",
-        points: n < penguin_count ? data["points"] : "",
-        spawn: n < penguin_count ? data["name"] : penguin_data[13]["name"],
-        specific: n < penguin_count ? data["location"] : "",
-        last_updated: n < penguin_count ? time_string : "",
-        warnings: n < penguin_count ? data["warning"] : "",
+        disguise: n < penguinCount ? data["disguise"] : "",
+        points: n < penguinCount ? data["points"] : "",
+        spawn: n < penguinCount ? data["name"] : penguinData[13]["name"],
+        specific: n < penguinCount ? data["location"] : "",
+        lastUpdated: n < penguinCount ? timeString : "",
+        warnings: n < penguinCount ? data["warning"] : "",
         requirements: data["requirements"],
     };
     return entry;
 }
 function updatePenguin(entry) {
-    const element = entry.number < penguin_count ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
-    const disguise_element = document.querySelector(`${element} #disguise`);
-    const points_element = document.querySelector(`${element} #points`);
-    const spawn_element = document.querySelector(`${element} #spawn`);
-    const updated_element = document.querySelector(`${element} #updated`);
-    const warnings_element = document.querySelector(`${element} #warnings`);
-    const specific_element = entry.number < penguin_count ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
-    if (entry.number < penguin_count) {
-        disguise_element.innerHTML = `<img class="disguise" src="./images/w60/${entry.disguise.toLowerCase()}.png">`;
-        spawn_element.innerText = entry.spawn;
-        specific_element.innerHTML = `
+    const element = entry.number < penguinCount ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
+    const disguiseElement = document.querySelector(`${element} #disguise`);
+    const pointsElement = document.querySelector(`${element} #points`);
+    const spawnElement = document.querySelector(`${element} #spawn`);
+    const updatedElement = document.querySelector(`${element} #updated`);
+    const warningsElement = document.querySelector(`${element} #warnings`);
+    const specificElement = entry.number < penguinCount ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
+    if (entry.number < penguinCount) {
+        disguiseElement.innerHTML = `<img class="disguise" src="./images/w60/${entry.disguise.toLowerCase()}.png">`;
+        spawnElement.innerText = entry.spawn;
+        specificElement.innerHTML = `
       <div class="location-container">
         <div class="location-text">${entry.specific}</div>
         <div class="location-actions">
           <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>
         </div>
       </div>`;
-        updated_element.innerText = entry.last_updated;
-        points_element.innerText = entry.points;
-        if (entry.number == penguin_count - 1)
-            warnings_element.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
-        if (entry.number == penguin_count - 2)
-            warnings_element.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
+        updatedElement.innerText = entry.lastUpdated;
+        pointsElement.innerText = entry.points;
+        if (entry.number == penguinCount - 1)
+            warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+        if (entry.number == penguinCount - 2)
+            warningsElement.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
         if (entry.requirements)
-            warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
+            warningsElement.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
         if (entry.warnings)
-            warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
+            warningsElement.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
     }
     else {
-        disguise_element.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
-        spawn_element.innerText = `${entry.spawn}`;
-        points_element.innerText = 1;
-        warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
+        disguiseElement.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
+        spawnElement.innerText = `${entry.spawn}`;
+        pointsElement.innerText = 1;
+        warningsElement.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
     }
 }
-function buildPenguinTable(row_amount) {
-    const penguins_div = document.querySelector(".pengs");
-    const error_template = `
+function buildPenguinTable(amountOfRows) {
+    document.querySelector("#error")?.remove();
+    for (let i = 1; i <= amountOfRows; i++) {
+        let warning = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
+        while (warning && warning.hasChildNodes())
+            warning.removeChild(warning.firstChild);
+    }
+    const penguinsDiv = document.querySelector(".pengs");
+    const errorTemplate = `
     <table class="nistable" id="row1">
       <tr>
       <th class="spawn">
@@ -195,7 +204,7 @@ function buildPenguinTable(row_amount) {
       </th>
     </tr>
   </table>`;
-    const penguin_template = `
+    const penguinTemplate = `
   <div class="peng-entry">
     <table class="nistable" id="row1">
       <tr>
@@ -213,7 +222,7 @@ function buildPenguinTable(row_amount) {
       </tr>
     </table>
   </div>`;
-    const bear_template = `
+    const bearTemplate = `
   <div class="peng-entry">
     <table class="nistable">
       <tr class="bear">
@@ -225,25 +234,25 @@ function buildPenguinTable(row_amount) {
       </tr>
     </table>
   </div>`;
-    let row_div;
-    if (!penguin_data || row_amount === 1) {
-        row_div = document.createElement("div");
-        addRow(penguins_div, row_div, error_template, "error");
+    let rowDiv;
+    if (!penguinData || amountOfRows === 1) {
+        rowDiv = document.createElement("div");
+        addRow(penguinsDiv, rowDiv, errorTemplate, "error");
     }
     else {
-        for (let i = 1; i <= row_amount; i++) {
-            row_div = document.createElement("div");
-            row_div.setAttribute("onclick", `dim_row(${i})`);
-            const template = i < row_amount ? penguin_template.replace(/\$PID\$/g, i.toString()) : bear_template;
-            addRow(penguins_div, row_div, template, `p${i}`);
+        for (let i = 1; i <= amountOfRows; i++) {
+            rowDiv = document.createElement("div");
+            rowDiv.setAttribute("onclick", `dimRow(${i})`);
+            const template = i < amountOfRows ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
+            addRow(penguinsDiv, rowDiv, template, `p${i}`);
         }
     }
 }
-function addRow(penguins_div, row_div, template, id) {
+function addRow(penguinsDiv, rowDiv, template, id) {
     if (!document.querySelector(`#${id}`)) {
-        row_div.id = id;
-        row_div.innerHTML = template;
-        penguins_div.appendChild(row_div);
+        rowDiv.id = id;
+        rowDiv.innerHTML = template;
+        penguinsDiv.appendChild(rowDiv);
     }
 }
 async function fetchPenguinData(url) {
@@ -267,7 +276,7 @@ async function fetchPenguinData(url) {
     }
 }
 async function confirmLocation(penguinId) {
-    if (!penguin_data || !penguin_data[String(penguinId)]) {
+    if (!penguinData || !penguinData[String(penguinId)]) {
         console.error("Cannot confirm location: No penguin data available");
         return;
     }
@@ -310,7 +319,7 @@ async function confirmLocation(penguinId) {
 }
 function editLocation(penguinId, event) {
     event.stopPropagation();
-    if (!penguin_data || !penguin_data[String(penguinId)]) {
+    if (!penguinData || !penguinData[String(penguinId)]) {
         console.error("Cannot edit location: No penguin data available");
         return;
     }
@@ -319,7 +328,7 @@ function editLocation(penguinId, event) {
         return;
     if (specificElement.querySelector(".edit-form"))
         return;
-    const currentLocation = penguin_data[String(penguinId)].location;
+    const currentLocation = penguinData[String(penguinId)].location;
     const originalContent = specificElement.innerHTML;
     const form = document.createElement("div");
     form.className = "edit-form";
@@ -371,7 +380,7 @@ async function updateLocation(penguinId, newLocation) {
     const specificElement = document.querySelector(`#p${penguinId} #specific`);
     if (!specificElement)
         return;
-    const originalContent = penguin_data[String(penguinId)].location;
+    const originalContent = penguinData[String(penguinId)].location;
     specificElement.innerHTML = `<span class="loading-indicator">Updating...</span>`;
     try {
         const data = {
@@ -389,7 +398,7 @@ async function updateLocation(penguinId, newLocation) {
             throw new Error(`HTTP error! Status: ${response.status} - ${response.statusText}`);
         }
         await response.json();
-        penguin_data[String(penguinId)].location = newLocation;
+        penguinData[String(penguinId)].location = newLocation;
         specificElement.innerHTML = `
       <div class="location-container">
         <div class="location-text">${newLocation}</div>
