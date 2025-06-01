@@ -3,8 +3,8 @@ const PENGUIN_SITE: string = `https://api.w60pengu.in`;
 const PERFORM_FETCH: boolean = true;
 // Local storage key for retaining infobox state
 const INFO_BOX_STORAGE_KEY: string = "w60penguins_infobox_state";
-let penguin_data: any;
-let penguin_count: number;
+let penguinData: any;
+let penguinCount: number;
 
 type Entry = {
   number: number;
@@ -12,7 +12,7 @@ type Entry = {
   points: string;
   spawn: string;
   specific: string;
-  last_updated: string;
+  lastUpdated: string;
   warnings: string;
   requirements: string;
 };
@@ -24,15 +24,15 @@ function start(): void {
   resetRows();
   refresh();
   loadInfoBoxState();
-  animateProgressBar(penguin_data ? 30000 : 10000);
+  animateProgressBar(penguinData ? 30000 : 10000);
 
   // Auto-refresh every 30 seconds
   setInterval(
     async () => {
       await refresh();
-      animateProgressBar(penguin_data ? 30000 : 10000);
+      animateProgressBar(penguinData ? 30000 : 10000);
     },
-    penguin_data ? 30000 : 10000
+    penguinData ? 30000 : 10000
   );
 }
 
@@ -104,7 +104,7 @@ function toggleInfo(): void {
  * Resets or undims all rows
  */
 function resetRows(): void {
-  for (let n: number = 1; n < penguin_count + 1; n++) {
+  for (let n: number = 1; n < penguinCount + 1; n++) {
     const row = document.getElementById(`p${n}`);
     if (row) {
       row.style.opacity = "1";
@@ -143,13 +143,13 @@ function dimRow(number: number) {
  */
 async function refresh() {
   const now = new Date();
-  if (PERFORM_FETCH) penguin_data = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
-  penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
-  clearOldData(penguin_count);
-  buildPenguinTable(penguin_count);
+  if (PERFORM_FETCH) penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
+  penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
+  clearOldData(penguinCount);
+  buildPenguinTable(penguinCount);
 
-  if (penguin_data) {
-    for (let n: number = 1; n <= penguin_count; n++) {
+  if (penguinData) {
+    for (let n: number = 1; n <= penguinCount; n++) {
       updatePenguin(getPenguinInfo(n));
     }
   }
@@ -162,7 +162,7 @@ async function refresh() {
 function clearOldData(count: number): void {
   document.querySelector("#error")?.remove();
   for (let i: number = 1; i <= count; i++) {
-    let disguise: any = i < penguin_count ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
+    let disguise: any = i < penguinCount ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
     let warning: any = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
     let penguin_entry: any = document.querySelector(`#p${i}`);
     if (penguin_entry && penguin_entry.hasAttribute("hidden")) penguin_entry.removeAttribute("hidden");
@@ -177,7 +177,7 @@ function clearOldData(count: number): void {
  * @returns Entry of n penguin
  */
 function getPenguinInfo(n: number): Entry {
-  const data = n < penguin_count ? penguin_data[String(n)] : "";
+  const data = n < penguinCount ? penguinData[String(n)] : "";
   const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
   const time_string =
     timeDiffInMinutes > 1440
@@ -190,14 +190,14 @@ function getPenguinInfo(n: number): Entry {
 
   const entry: Entry = {
     number: n,
-    disguise: n < penguin_count ? data["disguise"] : "",
-    points: n < penguin_count ? data["points"] : "",
-    spawn: n < penguin_count ? data["name"] : penguin_data[13]["name"],
-    specific: n < penguin_count ? data["location"] : "",
-    last_updated: n < penguin_count ? time_string : "",
+    disguise: n < penguinCount ? data["disguise"] : "",
+    points: n < penguinCount ? data["points"] : "",
+    spawn: n < penguinCount ? data["name"] : penguinData[13]["name"],
+    specific: n < penguinCount ? data["location"] : "",
+    lastUpdated: n < penguinCount ? time_string : "",
 
     // The new API doesn't have warning or requirement json keys, but I'm leaving them here incase they ever get added.
-    warnings: n < penguin_count ? data["warning"] : "",
+    warnings: n < penguinCount ? data["warning"] : "",
     requirements: data["requirements"],
   };
 
@@ -209,40 +209,39 @@ function getPenguinInfo(n: number): Entry {
  * @param entry Entry for the penguin/bear to update
  */
 function updatePenguin(entry: Entry): void {
-  const element: string = entry.number < penguin_count ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
-  const disguise_element: any = document.querySelector(`${element} #disguise`);
-  const points_element: any = document.querySelector(`${element} #points`);
-  const spawn_element: any = document.querySelector(`${element} #spawn`);
-  const updated_element: any = document.querySelector(`${element} #updated`);
-  const warnings_element: any = document.querySelector(`${element} #warnings`);
-  const specific_element: any = entry.number < penguin_count ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
+  const element: string = entry.number < penguinCount ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
+  const disguiseElement: any = document.querySelector(`${element} #disguise`);
+  const pointsElement: any = document.querySelector(`${element} #points`);
+  const spawnElement: any = document.querySelector(`${element} #spawn`);
+  const updatedElement: any = document.querySelector(`${element} #updated`);
+  const warningsElement: any = document.querySelector(`${element} #warnings`);
+  const specificElement: any = entry.number < penguinCount ? document.querySelector(`#p${entry.number} #row2 #specific`) : null;
 
-  if (entry.number < penguin_count) {
-    disguise_element.innerHTML = `<img class="disguise" src="./images/w60/${entry.disguise.toLowerCase()}.png">`;
-    spawn_element.innerText = entry.spawn;
-    specific_element.innerHTML = `
+  if (entry.number < penguinCount) {
+    disguiseElement.innerHTML = `<img class="disguise" src="./images/w60/${entry.disguise.toLowerCase()}.png">`;
+    spawnElement.innerText = entry.spawn;
+    specificElement.innerHTML = `
       <div class="location-container">
         <div class="location-text">${entry.specific}</div>
         <div class="location-actions">
           <span class="edit-icon" onclick="event.stopPropagation(); editLocation(${entry.number}, event)" title="Edit location">✏️</span>
         </div>
       </div>`;
-    updated_element.innerText = entry.last_updated;
-    points_element.innerText = entry.points;
+    updatedElement.innerText = entry.lastUpdated;
+    pointsElement.innerText = entry.points;
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
-    if (entry.number == penguin_count - 1)
-      warnings_element.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+    if (entry.number == penguinCount - 1) warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
     // Gives the ghost penguin the Some Like it Cold and Desert Treasure requirements tooltip
-    if (entry.number == penguin_count - 2)
-      warnings_element.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
-    if (entry.requirements) warnings_element.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
-    if (entry.warnings) warnings_element.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
+    if (entry.number == penguinCount - 2)
+      warningsElement.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
+    if (entry.requirements) warningsElement.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
+    if (entry.warnings) warningsElement.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
   } else {
-    disguise_element.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
-    spawn_element.innerText = `${entry.spawn}`;
-    points_element.innerText = 1;
+    disguiseElement.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
+    spawnElement.innerText = `${entry.spawn}`;
+    pointsElement.innerText = 1;
     // Gives the polar bear the Hunt for Red Raktuber requirement tooltip
-    warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
+    warningsElement.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
   }
 }
 
@@ -251,8 +250,8 @@ function updatePenguin(entry: Entry): void {
  * @param row_amount Amount of rows to add
  */
 function buildPenguinTable(row_amount: number): void {
-  const penguins_div: any = document.querySelector(".pengs");
-  const error_template: string = `
+  const penguinsDiv: any = document.querySelector(".pengs");
+  const errorTemplate: string = `
     <table class="nistable" id="row1">
       <tr>
       <th class="spawn">
@@ -275,7 +274,7 @@ function buildPenguinTable(row_amount: number): void {
       </th>
     </tr>
   </table>`;
-  const penguin_template: string = `
+  const penguinTemplate: string = `
   <div class="peng-entry">
     <table class="nistable" id="row1">
       <tr>
@@ -293,7 +292,7 @@ function buildPenguinTable(row_amount: number): void {
       </tr>
     </table>
   </div>`;
-  const bear_template: string = `
+  const bearTemplate: string = `
   <div class="peng-entry">
     <table class="nistable">
       <tr class="bear">
@@ -305,18 +304,18 @@ function buildPenguinTable(row_amount: number): void {
       </tr>
     </table>
   </div>`;
-  let row_div: any;
+  let rowDiv: any;
 
-  if (!penguin_data || row_amount === 1) {
-    row_div = document.createElement("div");
-    addRow(penguins_div, row_div, error_template, "error");
+  if (!penguinData || row_amount === 1) {
+    rowDiv = document.createElement("div");
+    addRow(penguinsDiv, rowDiv, errorTemplate, "error");
   } else {
     for (let i: number = 1; i <= row_amount; i++) {
-      row_div = document.createElement("div");
-      row_div.setAttribute("onclick", `dim_row(${i})`);
+      rowDiv = document.createElement("div");
+      rowDiv.setAttribute("onclick", `dimRow(${i})`);
       // Replace $PID$ placeholder with the actual penguin ID
-      const template = i < row_amount ? penguin_template.replace(/\$PID\$/g, i.toString()) : bear_template;
-      addRow(penguins_div, row_div, template, `p${i}`);
+      const template = i < row_amount ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
+      addRow(penguinsDiv, rowDiv, template, `p${i}`);
     }
   }
 }
@@ -366,7 +365,7 @@ async function fetchPenguinData(url: string): Promise<any> {
  * @param penguinId The ID of the penguin to confirm
  */
 async function confirmLocation(penguinId: number): Promise<void> {
-  if (!penguin_data || !penguin_data[String(penguinId)]) {
+  if (!penguinData || !penguinData[String(penguinId)]) {
     console.error("Cannot confirm location: No penguin data available");
     return;
   }
@@ -433,7 +432,7 @@ async function confirmLocation(penguinId: number): Promise<void> {
 function editLocation(penguinId: number, event: Event): void {
   event.stopPropagation(); // Prevent row dimming
 
-  if (!penguin_data || !penguin_data[String(penguinId)]) {
+  if (!penguinData || !penguinData[String(penguinId)]) {
     console.error("Cannot edit location: No penguin data available");
     return;
   }
@@ -444,7 +443,7 @@ function editLocation(penguinId: number, event: Event): void {
   // If we're already editing, don't create another form
   if (specificElement.querySelector(".edit-form")) return;
 
-  const currentLocation = penguin_data[String(penguinId)].location;
+  const currentLocation = penguinData[String(penguinId)].location;
   const originalContent = specificElement.innerHTML;
 
   // Create and append edit form
@@ -511,7 +510,7 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
   if (!specificElement) return;
 
   // Store original content to restore on error
-  const originalContent = penguin_data[String(penguinId)].location;
+  const originalContent = penguinData[String(penguinId)].location;
 
   // Show loading state
   specificElement.innerHTML = `<span class="loading-indicator">Updating...</span>`;
@@ -540,7 +539,7 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
     await response.json();
 
     // Update local data
-    penguin_data[String(penguinId)].location = newLocation;
+    penguinData[String(penguinId)].location = newLocation;
 
     // Update the display with the new container structure
     specificElement.innerHTML = `
