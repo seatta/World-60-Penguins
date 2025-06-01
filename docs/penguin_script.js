@@ -13,7 +13,7 @@ function start() {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
         await refresh();
-        let delay = penguinData ? 3000 : 1000;
+        let delay = penguinData ? 30000 : 10000;
         animateProgressBar(delay);
         setTimeout(loopRefresh, delay);
     }
