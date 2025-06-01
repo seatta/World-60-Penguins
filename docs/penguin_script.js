@@ -1,11 +1,11 @@
 "use strict";
-const penguin_site = `https://api.w60pengu.in`;
+const PENGUIN_SITE = `https://api.w60pengu.in`;
+const PERFORM_FETCH = true;
+const INFO_BOX_STORAGE_KEY = "w60penguins_infobox_state";
 let penguin_data;
 let penguin_count;
-const perform_fetch = true;
-const INFO_BOX_STORAGE_KEY = "w60penguins_infobox_state";
 function start() {
-    reset_rows();
+    resetRows();
     refresh();
     loadInfoBoxState();
     animateProgressBar(penguin_data ? 30000 : 10000);
@@ -59,7 +59,7 @@ function toggleInfo() {
         }
     }
 }
-function reset_rows() {
+function resetRows() {
     for (let n = 1; n < penguin_count + 1; n++) {
         const row = document.getElementById(`p${n}`);
         if (row) {
@@ -70,7 +70,7 @@ function reset_rows() {
         }
     }
 }
-function dim_row(number) {
+function dimRow(number) {
     const peng = `p${number}`;
     const entry = document.getElementById(`${peng}`);
     const specificElement = document.querySelector(`#${peng} #specific`);
@@ -87,18 +87,18 @@ function dim_row(number) {
 }
 async function refresh() {
     const now = new Date();
-    if (perform_fetch)
-        penguin_data = await fetch_penguin_data(`${penguin_site}/locations`);
+    if (PERFORM_FETCH)
+        penguin_data = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
     penguin_count = penguin_data ? Object.keys(penguin_data).filter((k) => !isNaN(Number(k))).length : 1;
-    clear_old_data(penguin_count);
-    build_penguin_table(penguin_count);
+    clearOldData(penguin_count);
+    buildPenguinTable(penguin_count);
     if (penguin_data) {
         for (let n = 1; n <= penguin_count; n++) {
-            update_penguin(get_penguin_info(n));
+            updatePenguin(getPenguinInfo(n));
         }
     }
 }
-function clear_old_data(count) {
+function clearOldData(count) {
     document.querySelector("#error")?.remove();
     for (let i = 1; i <= count; i++) {
         let disguise = i < penguin_count ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
@@ -112,7 +112,7 @@ function clear_old_data(count) {
             warning.removeChild(warning.firstChild);
     }
 }
-function get_penguin_info(n) {
+function getPenguinInfo(n) {
     const data = n < penguin_count ? penguin_data[String(n)] : "";
     const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
     const time_string = timeDiffInMinutes > 1440
@@ -134,7 +134,7 @@ function get_penguin_info(n) {
     };
     return entry;
 }
-function update_penguin(entry) {
+function updatePenguin(entry) {
     const element = entry.number < penguin_count ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
     const disguise_element = document.querySelector(`${element} #disguise`);
     const points_element = document.querySelector(`${element} #points`);
@@ -170,7 +170,7 @@ function update_penguin(entry) {
         warnings_element.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
     }
 }
-function build_penguin_table(row_amount) {
+function buildPenguinTable(row_amount) {
     const penguins_div = document.querySelector(".pengs");
     const error_template = `
     <table class="nistable" id="row1">
@@ -228,25 +228,25 @@ function build_penguin_table(row_amount) {
     let row_div;
     if (!penguin_data || row_amount === 1) {
         row_div = document.createElement("div");
-        add_row(penguins_div, row_div, error_template, "error");
+        addRow(penguins_div, row_div, error_template, "error");
     }
     else {
         for (let i = 1; i <= row_amount; i++) {
             row_div = document.createElement("div");
             row_div.setAttribute("onclick", `dim_row(${i})`);
             const template = i < row_amount ? penguin_template.replace(/\$PID\$/g, i.toString()) : bear_template;
-            add_row(penguins_div, row_div, template, `p${i}`);
+            addRow(penguins_div, row_div, template, `p${i}`);
         }
     }
 }
-function add_row(penguins_div, row_div, template, id) {
+function addRow(penguins_div, row_div, template, id) {
     if (!document.querySelector(`#${id}`)) {
         row_div.id = id;
         row_div.innerHTML = template;
         penguins_div.appendChild(row_div);
     }
 }
-async function fetch_penguin_data(url) {
+async function fetchPenguinData(url) {
     try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -280,7 +280,7 @@ async function confirmLocation(penguinId) {
             const data = {
                 key: penguinId,
             };
-            const response = await fetch(`${penguin_site}/locationConfirm`, {
+            const response = await fetch(`${PENGUIN_SITE}/locationConfirm`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -378,7 +378,7 @@ async function updateLocation(penguinId, newLocation) {
             key: penguinId,
             location: newLocation,
         };
-        const response = await fetch(`${penguin_site}/locationUpdate`, {
+        const response = await fetch(`${PENGUIN_SITE}/locationUpdate`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
