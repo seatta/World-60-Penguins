@@ -118,7 +118,7 @@ async function refresh() {
 function getPenguinInfo(n) {
     const data = n < penguinCount ? penguinData[String(n)] : "";
     const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
-    const time_string = timeDiffInMinutes > 1440
+    const timeString = timeDiffInMinutes > 1440
         ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
         : timeDiffInMinutes > 60
             ? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
@@ -131,7 +131,7 @@ function getPenguinInfo(n) {
         points: n < penguinCount ? data["points"] : "",
         spawn: n < penguinCount ? data["name"] : penguinData[13]["name"],
         specific: n < penguinCount ? data["location"] : "",
-        lastUpdated: n < penguinCount ? time_string : "",
+        lastUpdated: n < penguinCount ? timeString : "",
         warnings: n < penguinCount ? data["warning"] : "",
         requirements: data["requirements"],
     };
@@ -173,9 +173,9 @@ function updatePenguin(entry) {
         warningsElement.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
     }
 }
-function buildPenguinTable(row_amount) {
+function buildPenguinTable(amountOfRows) {
     document.querySelector("#error")?.remove();
-    for (let i = 1; i <= row_amount; i++) {
+    for (let i = 1; i <= amountOfRows; i++) {
         let warning = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
         while (warning && warning.hasChildNodes())
             warning.removeChild(warning.firstChild);
@@ -235,24 +235,24 @@ function buildPenguinTable(row_amount) {
     </table>
   </div>`;
     let rowDiv;
-    if (!penguinData || row_amount === 1) {
+    if (!penguinData || amountOfRows === 1) {
         rowDiv = document.createElement("div");
         addRow(penguinsDiv, rowDiv, errorTemplate, "error");
     }
     else {
-        for (let i = 1; i <= row_amount; i++) {
+        for (let i = 1; i <= amountOfRows; i++) {
             rowDiv = document.createElement("div");
             rowDiv.setAttribute("onclick", `dimRow(${i})`);
-            const template = i < row_amount ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
+            const template = i < amountOfRows ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
             addRow(penguinsDiv, rowDiv, template, `p${i}`);
         }
     }
 }
-function addRow(penguins_div, row_div, template, id) {
+function addRow(penguinsDiv, rowDiv, template, id) {
     if (!document.querySelector(`#${id}`)) {
-        row_div.id = id;
-        row_div.innerHTML = template;
-        penguins_div.appendChild(row_div);
+        rowDiv.id = id;
+        rowDiv.innerHTML = template;
+        penguinsDiv.appendChild(rowDiv);
     }
 }
 async function fetchPenguinData(url) {

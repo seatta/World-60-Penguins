@@ -185,7 +185,7 @@ async function refresh() {
 function getPenguinInfo(n: number): Entry {
   const data = n < penguinCount ? penguinData[String(n)] : "";
   const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
-  const time_string =
+  const timeString =
     timeDiffInMinutes > 1440
       ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
       : timeDiffInMinutes > 60
@@ -200,7 +200,7 @@ function getPenguinInfo(n: number): Entry {
     points: n < penguinCount ? data["points"] : "",
     spawn: n < penguinCount ? data["name"] : penguinData[13]["name"],
     specific: n < penguinCount ? data["location"] : "",
-    lastUpdated: n < penguinCount ? time_string : "",
+    lastUpdated: n < penguinCount ? timeString : "",
 
     // The new API doesn't have warning or requirement json keys, but I'm leaving them here incase they ever get added.
     warnings: n < penguinCount ? data["warning"] : "",
@@ -253,13 +253,13 @@ function updatePenguin(entry: Entry): void {
 
 /**
  * Builds the penguin table based on an amount of rows
- * @param row_amount Amount of rows to add
+ * @param amountOfRows Amount of rows to add
  */
-function buildPenguinTable(row_amount: number): void {
+function buildPenguinTable(amountOfRows: number): void {
   document.querySelector("#error")?.remove();
 
   // Clear old warnings -- This prevents duplicate warnings/reqs icons being added
-  for (let i: number = 1; i <= row_amount; i++) {
+  for (let i: number = 1; i <= amountOfRows; i++) {
     let warning: any = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
     while (warning && warning.hasChildNodes()) warning.removeChild(warning.firstChild);
   }
@@ -320,32 +320,32 @@ function buildPenguinTable(row_amount: number): void {
   </div>`;
   let rowDiv: any;
 
-  if (!penguinData || row_amount === 1) {
+  if (!penguinData || amountOfRows === 1) {
     rowDiv = document.createElement("div");
     addRow(penguinsDiv, rowDiv, errorTemplate, "error");
   } else {
-    for (let i: number = 1; i <= row_amount; i++) {
+    for (let i: number = 1; i <= amountOfRows; i++) {
       rowDiv = document.createElement("div");
       rowDiv.setAttribute("onclick", `dimRow(${i})`);
       // Replace $PID$ placeholder with the actual penguin ID
-      const template = i < row_amount ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
+      const template = i < amountOfRows ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
       addRow(penguinsDiv, rowDiv, template, `p${i}`);
     }
   }
 }
 
 /**
- * Adds a row to the penguins_div
- * @param penguins_div HTML Div where penguins are nested
- * @param row_div HTML Div of the current row
- * @param template HTML string to add to row_div
- * @param id Id to assign row_div
+ * Adds a row to the penguinsDiv
+ * @param penguinsDiv HTML Div where penguins are nested
+ * @param rowDiv HTML Div of the current row
+ * @param template HTML string to add to rowDiv
+ * @param id Id to assign rowDiv
  */
-function addRow(penguins_div: any, row_div: any, template: string, id: string): void {
+function addRow(penguinsDiv: any, rowDiv: any, template: string, id: string): void {
   if (!document.querySelector(`#${id}`)) {
-    row_div.id = id;
-    row_div.innerHTML = template;
-    penguins_div.appendChild(row_div);
+    rowDiv.id = id;
+    rowDiv.innerHTML = template;
+    penguinsDiv.appendChild(rowDiv);
   }
 }
 
