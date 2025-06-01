@@ -26,6 +26,7 @@ function start(): void {
 
   async function loopRefresh(): Promise<void> {
     // Wait while .edit-form exists to avoid refreshing mid-edit, which would remove the element.
+    const bar = document.getElementById("progressBar") as HTMLElement;
     while (document.querySelector(".edit-form")) {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
@@ -166,7 +167,6 @@ function dimRow(number: number) {
  * The main function. Builds the table and inputs the data
  */
 async function refresh() {
-  const now = new Date();
   if (PERFORM_FETCH) penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
   penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
   clearOldData(penguinCount);

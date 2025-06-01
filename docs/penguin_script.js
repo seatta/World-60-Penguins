@@ -8,6 +8,7 @@ function start() {
     loadInfoBoxState();
     watchEditForm();
     async function loopRefresh() {
+        const bar = document.getElementById("progressBar");
         while (document.querySelector(".edit-form")) {
             await new Promise((resolve) => setTimeout(resolve, 500));
         }
@@ -104,7 +105,6 @@ function dimRow(number) {
     }
 }
 async function refresh() {
-    const now = new Date();
     if (PERFORM_FETCH)
         penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
     penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
