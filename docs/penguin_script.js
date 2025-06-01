@@ -108,26 +108,11 @@ async function refresh() {
     if (PERFORM_FETCH)
         penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
     penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
-    clearOldData(penguinCount);
     buildPenguinTable(penguinCount);
     if (penguinData) {
         for (let n = 1; n <= penguinCount; n++) {
             updatePenguin(getPenguinInfo(n));
         }
-    }
-}
-function clearOldData(count) {
-    document.querySelector("#error")?.remove();
-    for (let i = 1; i <= count; i++) {
-        let disguise = i < penguinCount ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
-        let warning = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
-        let penguin_entry = document.querySelector(`#p${i}`);
-        if (penguin_entry && penguin_entry.hasAttribute("hidden"))
-            penguin_entry.removeAttribute("hidden");
-        while (disguise && disguise.hasChildNodes())
-            disguise.removeChild(disguise.firstChild);
-        while (warning && warning.hasChildNodes())
-            warning.removeChild(warning.firstChild);
     }
 }
 function getPenguinInfo(n) {
@@ -189,6 +174,12 @@ function updatePenguin(entry) {
     }
 }
 function buildPenguinTable(row_amount) {
+    document.querySelector("#error")?.remove();
+    for (let i = 1; i <= row_amount; i++) {
+        let warning = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
+        while (warning && warning.hasChildNodes())
+            warning.removeChild(warning.firstChild);
+    }
     const penguinsDiv = document.querySelector(".pengs");
     const errorTemplate = `
     <table class="nistable" id="row1">

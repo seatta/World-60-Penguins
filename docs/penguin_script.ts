@@ -169,7 +169,6 @@ function dimRow(number: number) {
 async function refresh() {
   if (PERFORM_FETCH) penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
   penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
-  clearOldData(penguinCount);
   buildPenguinTable(penguinCount);
 
   if (penguinData) {
@@ -178,23 +177,6 @@ async function refresh() {
     }
   }
 }
-
-/**
- * Clears the data for a penguin
- * @param count Number of penguin
- */
-function clearOldData(count: number): void {
-  document.querySelector("#error")?.remove();
-  for (let i: number = 1; i <= count; i++) {
-    let disguise: any = i < penguinCount ? document.querySelector(`#p${i} #row1 tbody tr #disguise`) : document.querySelector(`#p${i} table tr #disguise`);
-    let warning: any = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
-    let penguin_entry: any = document.querySelector(`#p${i}`);
-    if (penguin_entry && penguin_entry.hasAttribute("hidden")) penguin_entry.removeAttribute("hidden");
-    while (disguise && disguise.hasChildNodes()) disguise.removeChild(disguise.firstChild);
-    while (warning && warning.hasChildNodes()) warning.removeChild(warning.firstChild);
-  }
-}
-
 /**
  * Returns the entry for the specified penguin
  * @param n Number of penguin
@@ -274,6 +256,14 @@ function updatePenguin(entry: Entry): void {
  * @param row_amount Amount of rows to add
  */
 function buildPenguinTable(row_amount: number): void {
+  document.querySelector("#error")?.remove();
+
+  // Clear old warnings -- This prevents duplicate warnings/reqs icons being added
+  for (let i: number = 1; i <= row_amount; i++) {
+    let warning: any = document.querySelector(`#p${i} #row1 tbody tr #warnings`);
+    while (warning && warning.hasChildNodes()) warning.removeChild(warning.firstChild);
+  }
+
   const penguinsDiv: any = document.querySelector(".pengs");
   const errorTemplate: string = `
     <table class="nistable" id="row1">
