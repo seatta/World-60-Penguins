@@ -1,4 +1,5 @@
 "use strict";
+A1lib.identifyApp("appconfig.json");
 const PENGUIN_SITE = `https://api.w60pengu.in`;
 const PERFORM_FETCH = true;
 const INFO_BOX_STORAGE_KEY = "w60penguins_infobox_state";
