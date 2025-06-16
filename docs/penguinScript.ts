@@ -1,3 +1,7 @@
+// Adds the "Add App" button in the Alt1 browser
+declare const A1lib: any;
+A1lib.identifyApp("appconfig.json");
+
 const PENGUIN_SITE: string = `https://api.w60pengu.in`;
 // Used to toggle fetching for testing
 const PERFORM_FETCH: boolean = true;

@@ -25,11 +25,23 @@ Clicking a penguin toggles its transparency, making it easier to keep track of p
 
 ---
 
-**_If you have the [Alt1 Toolkit][alt1_url] installed, paste the `alt1://` link below into your browser:_**
+<div align=left>
 
-`alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json`
+1. **Make sure you have the [Alt1 Toolkit][alt1_url] installed.**
+2. **Install World 60 Penguins using one of the following methods:**
 
-**_[You can also use it in your browser][site_url]_**
+   - _**Via Alt1 browser:**_<br>
+     Open the following URL in the Alt1 browser, then click the `Add App` button:
+     `https://seatta.github.io/World-60-Penguins`
+
+   - _**Via Alt1 protocol link:**_<br>
+     Open the following URL in your web browser to prompt Alt1 to install the plugin:
+     `alt1://addapp/https://seatta.github.io/World-60-Penguins/appconfig.json`
+
+- [You can also use the app directly in your browser][site_url]
+</div>
+
+<div align=center>
 
 ---
 
