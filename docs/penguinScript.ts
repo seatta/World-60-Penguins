@@ -1,12 +1,12 @@
 // Adds the "Add App" button in the Alt1 browser
 declare const A1lib: any;
-A1lib.identifyApp("appconfig.json");
+A1lib.identifyApp('appconfig.json');
 
 const PENGUIN_SITE: string = `https://api.w60pengu.in`;
 // Used to toggle fetching for testing
 const PERFORM_FETCH: boolean = true;
 // Local storage key for retaining infobox state
-const INFO_BOX_STORAGE_KEY: string = "w60penguins_infobox_state";
+const INFO_BOX_STORAGE_KEY: string = 'w60penguins_infobox_state';
 let penguinData: any;
 let penguinCount: number;
 
@@ -30,9 +30,9 @@ function start(): void {
 
   async function loopRefresh(): Promise<void> {
     // Wait while .edit-form exists to avoid refreshing mid-edit, which would remove the element.
-    const bar = document.getElementById("progressBar") as HTMLElement;
-    while (document.querySelector(".edit-form")) {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+    const bar = document.getElementById('progressBar') as HTMLElement;
+    while (document.querySelector('.edit-form')) {
+      await new Promise(resolve => setTimeout(resolve, 500));
     }
 
     await refresh();
@@ -49,12 +49,12 @@ function start(): void {
  * Watches for the .edit-form element and changes the auto-refresh progress bar accordingly
  */
 function watchEditForm(): void {
-  const bar = document.getElementById("progressBar") as HTMLElement;
+  const bar = document.getElementById('progressBar') as HTMLElement;
 
   const observer = new MutationObserver(() => {
-    const editing = document.querySelector(".edit-form") !== null;
+    const editing = document.querySelector('.edit-form') !== null;
     if (bar) {
-      bar.style.backgroundColor = editing ? "#f28b82" : "#4caf50";
+      bar.style.backgroundColor = editing ? '#f28b82' : '#4caf50';
     }
   });
 
@@ -69,41 +69,41 @@ function watchEditForm(): void {
  * @param duration Duration of the progress bar in ms
  */
 function animateProgressBar(duration: number): void {
-  const bar = document.getElementById("progressBar") as HTMLElement;
+  const bar = document.getElementById('progressBar') as HTMLElement;
   if (!bar) return;
 
   // Reset bar immediately
-  bar.style.transition = "none";
-  bar.style.width = "0%";
+  bar.style.transition = 'none';
+  bar.style.width = '0%';
 
   // Trigger reflow so the reset takes effect before animation
   void bar.offsetWidth;
 
   // Animate to 100%
   bar.style.transition = `width ${duration}ms linear`;
-  bar.style.width = "100%";
+  bar.style.width = '100%';
 }
 
 /**
  * Loads the info box state from local storage and applies it
  */
 function loadInfoBoxState(): void {
-  const box = document.getElementById("infoBox");
-  const toggle = document.getElementById("infoToggleText");
+  const box = document.getElementById('infoBox');
+  const toggle = document.getElementById('infoToggleText');
 
   if (box && toggle) {
     try {
       const savedState = localStorage.getItem(INFO_BOX_STORAGE_KEY);
       console.log(savedState);
-      if (savedState === "closed") {
-        box.style.display = "none";
-        toggle.textContent = "Click to expand";
+      if (savedState === 'closed') {
+        box.style.display = 'none';
+        toggle.textContent = 'Click to expand';
       } else {
-        box.style.display = "block";
-        toggle.textContent = "Click to collapse";
+        box.style.display = 'block';
+        toggle.textContent = 'Click to collapse';
       }
     } catch (error) {
-      console.error("Error accessing localStorage:", error);
+      console.error('Error accessing localStorage:', error);
     }
   }
 }
@@ -112,19 +112,19 @@ function loadInfoBoxState(): void {
  * Toggles the info box visibility and saves the state to local storage
  */
 function toggleInfo(): void {
-  const box = document.getElementById("infoBox");
-  const toggle = document.getElementById("infoToggleText");
+  const box = document.getElementById('infoBox');
+  const toggle = document.getElementById('infoToggleText');
 
   if (box && toggle) {
-    const newState = box.style.display === "none" ? "block" : "none";
+    const newState = box.style.display === 'none' ? 'block' : 'none';
     box.style.display = newState;
-    toggle.textContent = newState === "none" ? "Click to expand" : "Click to collapse";
+    toggle.textContent = newState === 'none' ? 'Click to expand' : 'Click to collapse';
 
     // Save state to local storage
     try {
-      localStorage.setItem(INFO_BOX_STORAGE_KEY, newState === "none" ? "closed" : "open");
+      localStorage.setItem(INFO_BOX_STORAGE_KEY, newState === 'none' ? 'closed' : 'open');
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
+      console.error('Error saving to localStorage:', error);
     }
   }
 }
@@ -136,9 +136,9 @@ function resetRows(): void {
   for (let n: number = 1; n < penguinCount + 1; n++) {
     const row = document.getElementById(`p${n}`);
     if (row) {
-      row.style.opacity = "1";
-      if (row.hasAttribute("dimmed")) {
-        row.removeAttribute("dimmed");
+      row.style.opacity = '1';
+      if (row.hasAttribute('dimmed')) {
+        row.removeAttribute('dimmed');
       }
     }
   }
@@ -156,13 +156,13 @@ function dimRow(number: number) {
   const specificElement = document.querySelector(`#${peng} #specific`);
 
   // If the row is being edited (contains an edit form), do not dim it
-  if (entry && ((specificElement && !specificElement.querySelector(".edit-form")) || peng === `p13`)) {
-    if (entry.hasAttribute("dimmed")) {
-      entry.removeAttribute("dimmed");
-      entry.style.opacity = "1";
+  if (entry && ((specificElement && !specificElement.querySelector('.edit-form')) || peng === `p13`)) {
+    if (entry.hasAttribute('dimmed')) {
+      entry.removeAttribute('dimmed');
+      entry.style.opacity = '1';
     } else {
-      entry.setAttribute("dimmed", "");
-      entry.style.opacity = "0.2";
+      entry.setAttribute('dimmed', '');
+      entry.style.opacity = '0.2';
     }
   }
 }
@@ -172,7 +172,7 @@ function dimRow(number: number) {
  */
 async function refresh() {
   if (PERFORM_FETCH) penguinData = await fetchPenguinData(`${PENGUIN_SITE}/locations`);
-  penguinCount = penguinData ? Object.keys(penguinData).filter((k) => !isNaN(Number(k))).length : 1;
+  penguinCount = penguinData ? Object.keys(penguinData).filter(k => !isNaN(Number(k))).length : 1;
   buildPenguinTable(penguinCount);
 
   if (penguinData) {
@@ -187,8 +187,8 @@ async function refresh() {
  * @returns Entry of n penguin
  */
 function getPenguinInfo(n: number): Entry {
-  const data = n < penguinCount ? penguinData[String(n)] : "";
-  const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data["lastUpdated"]) / 60);
+  const data = n < penguinCount ? penguinData[String(n)] : '';
+  const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data['lastUpdated']) / 60);
   const timeString =
     timeDiffInMinutes > 1440
       ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
@@ -196,19 +196,19 @@ function getPenguinInfo(n: number): Entry {
       ? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
       : timeDiffInMinutes > 1
       ? `${timeDiffInMinutes % 60}m`
-      : "<1m";
+      : '<1m';
 
   const entry: Entry = {
     number: n,
-    disguise: n < penguinCount ? data["disguise"] : "",
-    points: n < penguinCount ? data["points"] : "",
-    spawn: n < penguinCount ? data["name"] : penguinData[13]["name"],
-    specific: n < penguinCount ? data["location"] : "",
-    lastUpdated: n < penguinCount ? timeString : "",
+    disguise: n < penguinCount ? data['disguise'] : '',
+    points: n < penguinCount ? data['points'] : '',
+    spawn: n < penguinCount ? data['name'] : penguinData[13]['name'],
+    specific: n < penguinCount ? data['location'] : '',
+    lastUpdated: n < penguinCount ? timeString : '',
 
     // The new API doesn't have warning or requirement json keys, but I'm leaving them here incase they ever get added.
-    warnings: n < penguinCount ? data["warning"] : "",
-    requirements: data["requirements"],
+    warnings: n < penguinCount ? data['warning'] : '',
+    requirements: data['requirements'],
   };
 
   return entry;
@@ -240,7 +240,8 @@ function updatePenguin(entry: Entry): void {
     updatedElement.innerText = entry.lastUpdated;
     pointsElement.innerText = entry.points;
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
-    if (entry.number == penguinCount - 1) warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+    if (entry.number == penguinCount - 1)
+      warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
     // Gives the ghost penguin the Some Like it Cold and Desert Treasure requirements tooltip
     if (entry.number == penguinCount - 2)
       warningsElement.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
@@ -260,7 +261,7 @@ function updatePenguin(entry: Entry): void {
  * @param amountOfRows Amount of rows to add
  */
 function buildPenguinTable(amountOfRows: number): void {
-  document.querySelector("#error")?.remove();
+  document.querySelector('#error')?.remove();
 
   // Clear old warnings -- This prevents duplicate warnings/reqs icons being added
   for (let i: number = 1; i <= amountOfRows; i++) {
@@ -268,7 +269,7 @@ function buildPenguinTable(amountOfRows: number): void {
     while (warning && warning.hasChildNodes()) warning.removeChild(warning.firstChild);
   }
 
-  const penguinsDiv: any = document.querySelector(".pengs");
+  const penguinsDiv: any = document.querySelector('.pengs');
   const errorTemplate: string = `
     <table class="nistable" id="row1">
       <tr>
@@ -325,12 +326,12 @@ function buildPenguinTable(amountOfRows: number): void {
   let rowDiv: any;
 
   if (!penguinData || amountOfRows === 1) {
-    rowDiv = document.createElement("div");
-    addRow(penguinsDiv, rowDiv, errorTemplate, "error");
+    rowDiv = document.createElement('div');
+    addRow(penguinsDiv, rowDiv, errorTemplate, 'error');
   } else {
     for (let i: number = 1; i <= amountOfRows; i++) {
-      rowDiv = document.createElement("div");
-      rowDiv.setAttribute("onclick", `dimRow(${i})`);
+      rowDiv = document.createElement('div');
+      rowDiv.setAttribute('onclick', `dimRow(${i})`);
       // Replace $PID$ placeholder with the actual penguin ID
       const template = i < amountOfRows ? penguinTemplate.replace(/\$PID\$/g, i.toString()) : bearTemplate;
       addRow(penguinsDiv, rowDiv, template, `p${i}`);
@@ -371,9 +372,9 @@ async function fetchPenguinData(url: string): Promise<any> {
     }, 10000);
 
     if (error instanceof Error) {
-      console.error("Error fetching data:", error.message);
+      console.error('Error fetching data:', error.message);
     } else {
-      console.error("Unknown error occurred");
+      console.error('Unknown error occurred');
     }
   }
 }
@@ -384,7 +385,7 @@ async function fetchPenguinData(url: string): Promise<any> {
  */
 async function confirmLocation(penguinId: number): Promise<void> {
   if (!penguinData || !penguinData[String(penguinId)]) {
-    console.error("Cannot confirm location: No penguin data available");
+    console.error('Cannot confirm location: No penguin data available');
     return;
   }
 
@@ -393,8 +394,8 @@ async function confirmLocation(penguinId: number): Promise<void> {
   if (confirmButton) {
     // Show loading state
     const originalContent = confirmButton.innerHTML;
-    confirmButton.innerHTML = "⏳";
-    confirmButton.style.pointerEvents = "none";
+    confirmButton.innerHTML = '⏳';
+    confirmButton.style.pointerEvents = 'none';
 
     try {
       // Prepare the data to send (adjust according to actual API requirements)
@@ -404,9 +405,9 @@ async function confirmLocation(penguinId: number): Promise<void> {
 
       // Send confirmation to API
       const response = await fetch(`${PENGUIN_SITE}/locationConfirm`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
       });
@@ -419,24 +420,24 @@ async function confirmLocation(penguinId: number): Promise<void> {
       const result = await response.json();
 
       // Show success state
-      confirmButton.innerHTML = "✓";
-      confirmButton.classList.add("confirmed");
+      confirmButton.innerHTML = '✓';
+      confirmButton.classList.add('confirmed');
 
       // Reset after a delay
       setTimeout(() => {
         confirmButton.innerHTML = originalContent;
-        confirmButton.style.pointerEvents = "auto";
+        confirmButton.style.pointerEvents = 'auto';
       }, 3000);
     } catch (error) {
-      console.error("Error confirming location:", error);
+      console.error('Error confirming location:', error);
 
       // Show error state
-      confirmButton.innerHTML = "❌";
+      confirmButton.innerHTML = '❌';
 
       // Reset after a delay
       setTimeout(() => {
         confirmButton.innerHTML = originalContent;
-        confirmButton.style.pointerEvents = "auto";
+        confirmButton.style.pointerEvents = 'auto';
       }, 3000);
     }
   }
@@ -451,7 +452,7 @@ function editLocation(penguinId: number, event: Event): void {
   event.stopPropagation(); // Prevent row dimming
 
   if (!penguinData || !penguinData[String(penguinId)]) {
-    console.error("Cannot edit location: No penguin data available");
+    console.error('Cannot edit location: No penguin data available');
     return;
   }
 
@@ -459,14 +460,14 @@ function editLocation(penguinId: number, event: Event): void {
   if (!specificElement) return;
 
   // If we're already editing, don't create another form
-  if (specificElement.querySelector(".edit-form")) return;
+  if (specificElement.querySelector('.edit-form')) return;
 
   const currentLocation = penguinData[String(penguinId)].location;
   const originalContent = specificElement.innerHTML;
 
   // Create and append edit form
-  const form = document.createElement("div");
-  form.className = "edit-form";
+  const form = document.createElement('div');
+  form.className = 'edit-form';
   form.innerHTML = `
     <input type="text" class="location-input" value="${currentLocation}" />
     <div class="edit-buttons">
@@ -475,19 +476,19 @@ function editLocation(penguinId: number, event: Event): void {
     </div>
   `;
 
-  specificElement.innerHTML = "";
+  specificElement.innerHTML = '';
   specificElement.appendChild(form);
 
   // Focus the input
-  const inputField = form.querySelector(".location-input") as HTMLInputElement;
+  const inputField = form.querySelector('.location-input') as HTMLInputElement;
   inputField.focus();
   inputField.select();
 
   // Add event listeners to buttons
-  const saveButton = form.querySelector(".save-button") as HTMLButtonElement;
-  const cancelButton = form.querySelector(".cancel-button") as HTMLButtonElement;
+  const saveButton = form.querySelector('.save-button') as HTMLButtonElement;
+  const cancelButton = form.querySelector('.cancel-button') as HTMLButtonElement;
 
-  saveButton.addEventListener("click", async (e) => {
+  saveButton.addEventListener('click', async e => {
     e.stopPropagation();
     const newLocation = inputField.value.trim();
     if (newLocation && newLocation !== currentLocation) {
@@ -497,14 +498,14 @@ function editLocation(penguinId: number, event: Event): void {
     }
   });
 
-  cancelButton.addEventListener("click", (e) => {
+  cancelButton.addEventListener('click', e => {
     e.stopPropagation();
     specificElement.innerHTML = originalContent;
   });
 
   // Handle Enter key on input
-  inputField.addEventListener("keyup", async (e) => {
-    if (e.key === "Enter") {
+  inputField.addEventListener('keyup', async e => {
+    if (e.key === 'Enter') {
       e.stopPropagation();
       const newLocation = inputField.value.trim();
       if (newLocation && newLocation !== currentLocation) {
@@ -512,7 +513,7 @@ function editLocation(penguinId: number, event: Event): void {
       } else {
         specificElement.innerHTML = originalContent;
       }
-    } else if (e.key === "Escape") {
+    } else if (e.key === 'Escape') {
       specificElement.innerHTML = originalContent;
     }
   });
@@ -542,9 +543,9 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
 
     // Send update to API
     const response = await fetch(`${PENGUIN_SITE}/locationUpdate`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify(data),
     });
@@ -569,9 +570,9 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
       </div>`;
 
     // Show success notification
-    const notification = document.createElement("div");
-    notification.className = "update-notification success";
-    notification.textContent = "Location updated!";
+    const notification = document.createElement('div');
+    notification.className = 'update-notification success';
+    notification.textContent = 'Location updated!';
     document.body.appendChild(notification);
 
     // Remove notification after delay
@@ -579,7 +580,7 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
       notification.remove();
     }, 3000);
   } catch (error) {
-    console.error("Error updating location:", error);
+    console.error('Error updating location:', error);
 
     // Restore original content with the new container structure
     specificElement.innerHTML = `
@@ -591,9 +592,9 @@ async function updateLocation(penguinId: number, newLocation: string): Promise<v
       </div>`;
 
     // Show error notification
-    const notification = document.createElement("div");
-    notification.className = "update-notification error";
-    notification.textContent = "Failed to update location!";
+    const notification = document.createElement('div');
+    notification.className = 'update-notification error';
+    notification.textContent = 'Failed to update location!';
     document.body.appendChild(notification);
 
     // Remove notification after delay
