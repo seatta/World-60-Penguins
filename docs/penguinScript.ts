@@ -215,6 +215,22 @@ function getPenguinInfo(n: number): Entry {
 
   return entry;
 }
+/**
+ * Takes in a formatted lastUpdated string and converts it to minutes
+ * @param timeString The last updated time string
+ * @returns Amount of time in minutes
+ */
+function parseTimeStringToMinutes(timeString: string): number {
+  const dayMatch = timeString.match(/(\d+)d/);
+  const hourMatch = timeString.match(/(\d+)h/);
+  const minuteMatch = timeString.match(/(\d+)m/);
+
+  const days = dayMatch ? parseInt(dayMatch[1], 10) : 0;
+  const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+  const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+
+  return days * 1440 + hours * 60 + minutes;
+}
 
 /**
  * Updates an Entry's information
@@ -244,8 +260,14 @@ function updatePenguin(entry: Entry): void {
     // Gives the 2 point penguin the Back to the Freezer requirement tooltip
     if (entry.number == penguinCount - 1)
       warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
-    // Gives the ghost penguin the Some Like it Cold and Desert Treasure requirements tooltip
     if (entry.number == penguinCount - 2) {
+      // Updates the ghost penguin if it hadn't been updated in a certain time
+      const minutesSinceUpdated: number = parseTimeStringToMinutes(entry.lastUpdated);
+      if (minutesSinceUpdated >= 10) {
+        spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">Lost</span>';
+      }
+
+      // Gives the ghost penguin requirement and help elements
       warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
       warningsElement.innerHTML += `
         <a
