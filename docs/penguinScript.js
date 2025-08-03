@@ -140,6 +140,15 @@ function getPenguinInfo(n) {
     };
     return entry;
 }
+function parseTimeStringToMinutes(timeString) {
+    const dayMatch = timeString.match(/(\d+)d/);
+    const hourMatch = timeString.match(/(\d+)h/);
+    const minuteMatch = timeString.match(/(\d+)m/);
+    const days = dayMatch ? parseInt(dayMatch[1], 10) : 0;
+    const hours = hourMatch ? parseInt(hourMatch[1], 10) : 0;
+    const minutes = minuteMatch ? parseInt(minuteMatch[1], 10) : 0;
+    return days * 1440 + hours * 60 + minutes;
+}
 function updatePenguin(entry) {
     const element = entry.number < penguinCount ? `#p${entry.number} #row1 tr` : `#p${entry.number} table tbody tr`;
     const disguiseElement = document.querySelector(`${element} #disguise`);
@@ -163,6 +172,10 @@ function updatePenguin(entry) {
         if (entry.number == penguinCount - 1)
             warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
         if (entry.number == penguinCount - 2) {
+            const minutesSinceUpdated = parseTimeStringToMinutes(entry.lastUpdated);
+            if (minutesSinceUpdated >= 10) {
+                spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">LOST</span>';
+            }
             warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
             warningsElement.innerHTML += `
         <a
