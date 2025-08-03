@@ -174,7 +174,7 @@ function updatePenguin(entry) {
         if (entry.number == penguinCount - 2) {
             const minutesSinceUpdated = parseTimeStringToMinutes(entry.lastUpdated);
             if (minutesSinceUpdated >= 10) {
-                spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">Lost</span>';
+                spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">LOST</span>';
             }
             warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
             warningsElement.innerHTML += `

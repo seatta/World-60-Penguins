@@ -216,8 +216,8 @@ function getPenguinInfo(n: number): Entry {
   return entry;
 }
 /**
- * Takes in a formatted lastUpdated string and converts it to minutes
- * @param timeString The last updated time string
+ * Converts a formatted `lastUpdated` time string into minutes
+ * @param timeString The formatted last updated time string
  * @returns Amount of time in minutes
  */
 function parseTimeStringToMinutes(timeString: string): number {
@@ -264,7 +264,7 @@ function updatePenguin(entry: Entry): void {
       // Updates the ghost penguin if it hadn't been updated in a certain time
       const minutesSinceUpdated: number = parseTimeStringToMinutes(entry.lastUpdated);
       if (minutesSinceUpdated >= 10) {
-        spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">Lost</span>';
+        spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">LOST</span>';
       }
 
       // Gives the ghost penguin requirement and help elements
