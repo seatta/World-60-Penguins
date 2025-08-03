@@ -6,7 +6,7 @@
   "printWidth": 130,
   "proseWrap": "preserve",
   "bracketSpacing": true,
-  "bracketSameLine": false,
+  "bracketSameLine": true,
   "jsxSingleQuote": true,
   "endOfLine": "lf",
   "semi": true,

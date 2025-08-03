@@ -109,10 +109,21 @@ table {
 }
 
 .war,
-.req {
+.req,
+.help {
   padding: 0px 5px 0px 5px;
   margin: 2px;
+  column-width: 12px;
   color: black;
+  padding: 0;
+  margin: 2px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 12px;
+  font-family: monospace;
 }
 
 .war {
@@ -123,6 +134,15 @@ table {
 .req {
   background: lightblue;
   border-radius: 50%;
+}
+
+.help {
+  background: whitesmoke;
+  border-radius: 50% 50% 50% 15%;
+}
+
+.help:hover {
+  background: #c0c0c0;
 }
 
 .nistable {
