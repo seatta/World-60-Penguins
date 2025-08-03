@@ -191,7 +191,9 @@ function getPenguinInfo(n: number): Entry {
   const timeDiffInMinutes = Math.floor(Math.abs(new Date().getTime() / 1000 - data['lastUpdated']) / 60);
   const timeString =
     timeDiffInMinutes > 1440
-      ? `${Math.floor(timeDiffInMinutes / 1440)}d ` + `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
+      ? `${Math.floor(timeDiffInMinutes / 1440)}d ` +
+        `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` +
+        `${timeDiffInMinutes % 60}m`
       : timeDiffInMinutes > 60
       ? `${Math.floor((timeDiffInMinutes / 60) % 24)}h ` + `${timeDiffInMinutes % 60}m`
       : timeDiffInMinutes > 1
@@ -243,8 +245,19 @@ function updatePenguin(entry: Entry): void {
     if (entry.number == penguinCount - 1)
       warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
     // Gives the ghost penguin the Some Like it Cold and Desert Treasure requirements tooltip
-    if (entry.number == penguinCount - 2)
-      warningsElement.innerHTML += `<span class="req" title="Requires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
+    if (entry.number == penguinCount - 2) {
+      warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
+      warningsElement.innerHTML += `
+        <a
+          href="https://runescape.wiki/w/Penguin_Hide_and_Seek#Hints"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="text-decoration: none"
+          onclick="event.stopPropagation();">
+            <span class="help" title="Refer to spy device hint #11\n\nClick to open the RuneScape wiki">?</span>
+        </a>`;
+    }
+
     if (entry.requirements) warningsElement.innerHTML += `<span class="req" title="${entry.requirements}">i</span>`;
     if (entry.warnings) warningsElement.innerHTML += `<span class="war" title="${entry.warnings}">!</span>`;
   } else {
