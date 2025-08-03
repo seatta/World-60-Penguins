@@ -166,7 +166,7 @@ function updatePenguin(entry) {
             warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
             warningsElement.innerHTML += `
         <a
-          href="https://runescape.wiki/w/Penguin_Hide_and_Seek#Hints"
+          href="https://runescape.wiki/w/Penguin_Hide_and_Seek/1-point_penguin_spawn_locations"
           target="_blank"
           rel="noopener noreferrer"
           style="text-decoration: none"
