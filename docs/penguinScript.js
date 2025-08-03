@@ -170,13 +170,13 @@ function updatePenguin(entry) {
         updatedElement.innerText = entry.lastUpdated;
         pointsElement.innerText = entry.points;
         if (entry.number == penguinCount - 1)
-            warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\nBack to the Freezer">i</span>`;
+            warningsElement.innerHTML += `<span class="req" title="Requires the following quest:\n  Back to the Freezer">i</span>`;
         if (entry.number == penguinCount - 2) {
             const minutesSinceUpdated = parseTimeStringToMinutes(entry.lastUpdated);
             if (minutesSinceUpdated >= 10) {
                 spawnElement.innerHTML = 'Shadow Realm - <span style="color: red;">LOST</span>';
             }
-            warningsElement.innerHTML += `<span class="req" title="Teleports every ~10 minutes\n\nRequires the following quests:\nSome Like it Cold\nDesert Treasure">i</span>`;
+            warningsElement.innerHTML += `<span class="req" title="Requires the following quests:\n  Some Like it Cold\n  Desert Treasure\n\nRequires a way to see into the Shadow Realm:\n  Ring of Visibility or Sliske's Gift">i</span>`;
             warningsElement.innerHTML += `
         <a
           href="https://runescape.wiki/w/Penguin_Hide_and_Seek/1-point_penguin_spawn_locations"
@@ -184,7 +184,7 @@ function updatePenguin(entry) {
           rel="noopener noreferrer"
           style="text-decoration: none"
           onclick="event.stopPropagation();">
-            <span class="help" title="Refer to spy device hint #11\n\nClick to open the RuneScape wiki">?</span>
+            <span class="help" title="Teleports every ~10 minutes\nRefer to spy device hint #11\n\nClick to open the RuneScape wiki">?</span>
         </a>`;
         }
         if (entry.requirements)
@@ -196,7 +196,7 @@ function updatePenguin(entry) {
         disguiseElement.innerHTML = `<img class="disguise" src="./images/w60/polarbear.png" id="icon">`;
         spawnElement.innerText = `${entry.spawn}`;
         pointsElement.innerText = 1;
-        warningsElement.innerHTML = `<span class="req" title="Requires the following quest:\nHunt for Red Raktuber">i</span>`;
+        warningsElement.innerHTML = `<span class="req" title="Requires the following quest:\n  Hunt for Red Raktuber">i</span>`;
     }
 }
 function buildPenguinTable(amountOfRows) {
